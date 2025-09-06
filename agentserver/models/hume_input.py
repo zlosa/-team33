@@ -17,7 +17,7 @@ class SpeechProsodyData(BaseModel):
 
 
 class VocalBurstData(BaseModel):
-    burst: Dict[str, float] 
+    burst: Dict[str, float]
     predictions: Optional[List[Dict[str, Any]]] = None
     timestamp: Optional[str] = None
 
