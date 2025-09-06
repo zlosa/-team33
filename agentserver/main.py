@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from models.assessment import AutismAssessmentResponse
 from agents.analyzer import analyze_facial_expressions
+from datetime import datetime
 import uvicorn
 
 
@@ -17,7 +18,13 @@ app.add_middleware(
 
 @app.post("/analyze", response_model=AutismAssessmentResponse)
 async def analyze_expressions(facial_expression_data: dict):
+    print(f"🔄 Received analyze request at {datetime.now()}")
+    print(f"📊 Data keys: {list(facial_expression_data.keys())}")
+    print(f"📏 Data size: {len(str(facial_expression_data))} chars")
+    
     result = analyze_facial_expressions(facial_expression_data)
+    
+    print(f"✅ Analysis complete - likelihood: {result.aggregate_scores.overall_autism_likelihood:.3f}")
     return result
 
 @app.get("/health")
