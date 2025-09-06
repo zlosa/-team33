@@ -23,14 +23,14 @@ app.add_middleware(
 async def analyze_expressions(request: dict):
     print(f"🔄 Received analyze request at {datetime.now()}")
     
-    user_message = request.get("user_message", "")
+    conversation_data = request.get("conversation_data", {})
     hume_data = request.get("hume_data", {})
     
-    print(f"💬 User message: {user_message[:100]}...")
+    print(f"💬 Conversation data keys: {list(conversation_data.keys())}")
     print(f"📊 Hume data keys: {list(hume_data.keys())}")
     print(f"📏 Total data size: {len(str(request))} chars")
     
-    result = await analyze(user_message, hume_data)
+    result = await analyze(conversation_data, hume_data)
     
     print(f"✅ Analysis complete - likelihood: {result.aggregate_scores.overall_autism_likelihood:.3f}")
     return result

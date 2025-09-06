@@ -25,12 +25,9 @@ def test_analyze_endpoint():
     
     # Mock data following the architecture diagram structure
     mock_data = {
-        "user_message": "Structured AI agent interview data",
-        "hume_data": {
+        "conversation_data": {
             "session_id": "interview_session_456",
-            "conversation_data": {
-                "session_id": "interview_session_456",
-                "transcript": [
+            "transcript": [
                     {
                         "timestamp": 0,
                         "speaker": "agent",
@@ -58,8 +55,15 @@ def test_analyze_endpoint():
                 ],
                 "duration": 15.5,
                 "start_time": datetime.now().isoformat(),
-                "end_time": (datetime.now()).isoformat()
-            },
+                "end_time": (datetime.now()).isoformat(),
+                "metadata": {
+                    "total_turns": 4,
+                    "avg_response_time": 2.1,
+                    "conversation_quality": "high"
+                }
+        },
+        "hume_data": {
+            "session_id": "interview_session_456",
             "emotion_timeline": {
                 "session_id": "interview_session_456",
                 "face_emotions": [
@@ -126,6 +130,12 @@ def test_analyze_endpoint():
         if response.status_code == 200:
             result = response.json()
             print("✅ Analysis successful!")
+            print("\n" + "="*50)
+            print("FULL RESPONSE:")
+            print("="*50)
+            print(json.dumps(result, indent=2))
+            print("="*50)
+            print(f"\nSUMMARY:")
             print(f"Overall autism likelihood: {result['aggregate_scores']['overall_autism_likelihood']:.3f}")
             print(f"Professional evaluation priority: {result['recommendations']['professional_evaluation_priority']}")
             print(f"Confidence: {result['uncertainty_analysis']['overall_confidence']:.3f}")

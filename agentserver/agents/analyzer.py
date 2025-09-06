@@ -1,8 +1,6 @@
-import os
 from datetime import datetime
 from typing import Dict, Any
 from pydantic_ai import Agent
-from pydantic_ai.models.openai import OpenAIModel
 from models.assessment import (
     AutismAssessmentResponse,
     AssessmentMetadata,
@@ -36,13 +34,11 @@ from models.assessment import (
 )
 
 
-# Create model and agent following the example pattern
-model = OpenAIModel('gpt-4o')
-
-# Create PydanticAI agent with structured output
+# Create PydanticAI agent with structured output and retries
 autism_agent = Agent(
-    model,
-    result_type=AutismAssessmentResponse,  # Use result_type for structured output
+    'openai:gpt-4o',
+    output_type=AutismAssessmentResponse,
+    output_retries=3,  # Built-in PydanticAI retries
     system_prompt="""You are an expert autism assessment specialist with deep knowledge of DSM-5 criteria, 
     developmental psychology, and behavioral analysis. Your role is to analyze multi-modal data (facial expressions, 
     speech patterns, behavioral markers) and provide comprehensive autism spectrum disorder assessments.
@@ -60,40 +56,88 @@ autism_agent = Agent(
 )
 
 
-async def analyze(user_message: str, hume_data: Dict[str, Any]) -> AutismAssessmentResponse:
+async def analyze(conversation_data: Dict[str, Any], hume_data: Dict[str, Any]) -> AutismAssessmentResponse:
     """
-    Analyzes multi-modal Hume data and returns an autism assessment response using PydanticAI.
+    Analyzes multi-modal data using PydanticAI with built-in retry handling.
     """
+    from datetime import datetime
     
-    print(f"🤖 Analyzing with PydanticAI agent...")
+    session_id = conversation_data.get('session_id', 'unknown')
+    print(f"🔬 Starting autism assessment analysis for session: {session_id}")
+    print(f"📊 Data payload: {len(str(conversation_data))} chars conversation, {len(str(hume_data))} chars behavioral")
     
-    # Prepare analysis prompt with user message and data
+    # Build comprehensive analysis prompt
     analysis_prompt = f"""
-    Analyze the following interaction and behavioral data for autism spectrum indicators:
+    AUTISM SPECTRUM ASSESSMENT REQUEST
     
-    User Message/Interaction: {user_message}
+    Session ID: {session_id}
+    Analysis Timestamp: {datetime.now().isoformat()}
     
-    Behavioral Data: {hume_data}
+    CONVERSATION DATA:
+    {conversation_data}
     
-    Please provide a comprehensive autism assessment based on this information, including:
-    - Social communication analysis
-    - Behavioral pattern assessment  
-    - Speech/language evaluation
-    - Sensory response indicators
-    - Overall likelihood assessment with confidence scores
-    - Professional recommendations
+    MULTI-MODAL BEHAVIORAL DATA:
+    {hume_data}
+    
+    ASSESSMENT REQUIREMENTS:
+    Provide a comprehensive autism spectrum disorder assessment based on DSM-5 criteria, including:
+    
+    1. SOCIAL COMMUNICATION ANALYSIS:
+       - Turn-taking patterns and conversational flow
+       - Eye contact indicators from facial data  
+       - Pragmatic language use and contextual appropriateness
+       - Social reciprocity markers
+    
+    2. BEHAVIORAL PATTERN ASSESSMENT:
+       - Repetitive behaviors from video analysis
+       - Sensory processing indicators from emotional responses
+       - Attention patterns and regulation markers
+       - Self-regulation behaviors
+    
+    3. SPEECH & LANGUAGE EVALUATION:
+       - Prosodic patterns from speech analysis
+       - Vocal characteristics and modulation
+       - Language patterns and pragmatic usage
+    
+    4. CONFIDENCE & UNCERTAINTY ANALYSIS:
+       - Overall assessment confidence based on data quality
+       - Areas of uncertainty or conflicting indicators
+       - Data sufficiency for reliable assessment
+    
+    5. PROFESSIONAL RECOMMENDATIONS:
+       - Evaluation priority level (low/moderate/high/urgent)
+       - Suggested next steps for comprehensive assessment
+       - Monitoring recommendations
+    
+    CRITICAL: 
+    - Base your assessment solely on the provided data. Do not infer or assume information not present in the conversation and behavioral data.
+    - ALL SCORES MUST BE BETWEEN 0 AND 1 (0.0 to 1.0) representing probabilities/percentages:
+      * 0.0 = no evidence/lowest score
+      * 0.5 = moderate/average score  
+      * 1.0 = strong evidence/highest score
+    - Confidence scores represent certainty in your assessment (0.0 = very uncertain, 1.0 = very certain)
+    - Likelihood scores represent probability of condition (0.0 = very unlikely, 1.0 = very likely)
     """
     
     try:
-        # Run the agent with structured output
+        print(f"🤖 Running PydanticAI agent with built-in retries...")
+        
+        # PydanticAI handles retries automatically with output_retries=3
         result = await autism_agent.run(analysis_prompt)
-        print(f"✅ PydanticAI analysis complete")
-        # Access the data from the result properly
-        return result.data if hasattr(result, 'data') else result.result()
-    
+        
+        # Extract result data using proper PydanticAI API
+        assessment = result.output
+        
+        print(f"✅ Analysis successful")
+        print(f"📈 Assessment confidence: {assessment.uncertainty_analysis.overall_confidence:.3f}")
+        print(f"🎯 Autism likelihood: {assessment.aggregate_scores.overall_autism_likelihood:.3f}")
+        print(f"⚠️  Evaluation priority: {assessment.recommendations.professional_evaluation_priority}")
+        
+        return assessment
+        
     except Exception as e:
-        print(f"❌ PydanticAI analysis failed: {e}")
-        # Fall back to mock response if API fails
+        print(f"❌ PydanticAI analysis failed after retries: {e}")
+        print(f"🔄 Generating fallback assessment...")
         return _create_mock_response()
     
 def _create_mock_response() -> AutismAssessmentResponse:
