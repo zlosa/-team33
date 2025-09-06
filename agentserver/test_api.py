@@ -20,26 +20,97 @@ def test_health_endpoint():
         return False
 
 def test_analyze_endpoint():
-    """Test the analyze endpoint with mock user message and hume data"""
+    """Test the analyze endpoint with mock conversation and emotion timeline data"""
     print("\nTesting analyze endpoint...")
     
-    # Mock data with user_message and hume_data structure
+    # Mock data following the architecture diagram structure
     mock_data = {
-        "user_message": "Hello, I'm testing the autism assessment system. How are you doing today?",
+        "user_message": "Structured AI agent interview data",
         "hume_data": {
-            "facial_expressions": [
-                {"joy": 0.8, "sadness": 0.1, "anger": 0.05, "fear": 0.05},
-                {"joy": 0.6, "sadness": 0.2, "anger": 0.1, "fear": 0.1},
-                {"joy": 0.9, "sadness": 0.05, "anger": 0.02, "fear": 0.03}
-            ],
-            "audio_features": {
-                "pitch_mean": 150.5,
-                "pitch_std": 25.3,
-                "volume_mean": 0.7,
-                "speech_rate": 3.2
+            "session_id": "interview_session_456",
+            "conversation_data": {
+                "session_id": "interview_session_456",
+                "transcript": [
+                    {
+                        "timestamp": 0,
+                        "speaker": "agent",
+                        "text": "Hello! I'd like to ask you some questions about your daily experiences. How do you usually feel in social situations?",
+                        "confidence": 0.95
+                    },
+                    {
+                        "timestamp": 3.2,
+                        "speaker": "user", 
+                        "text": "I find them quite overwhelming sometimes. Too many people talking at once makes it hard to focus.",
+                        "confidence": 0.92
+                    },
+                    {
+                        "timestamp": 8.7,
+                        "speaker": "agent",
+                        "text": "That's interesting. Can you tell me more about what specifically feels overwhelming?",
+                        "confidence": 0.94
+                    },
+                    {
+                        "timestamp": 11.1,
+                        "speaker": "user",
+                        "text": "The sounds, the different conversations happening... I prefer smaller groups or one-on-one conversations.",
+                        "confidence": 0.89
+                    }
+                ],
+                "duration": 15.5,
+                "start_time": datetime.now().isoformat(),
+                "end_time": (datetime.now()).isoformat()
             },
-            "timestamp": datetime.now().isoformat(),
-            "video_duration": 120
+            "emotion_timeline": {
+                "session_id": "interview_session_456",
+                "face_emotions": [
+                    {
+                        "timestamp": 0,
+                        "emotions": [{"Joy": 0.3, "Neutral": 0.6, "Confusion": 0.1}],
+                        "confidence": 0.85
+                    },
+                    {
+                        "timestamp": 3.2,
+                        "emotions": [{"Anxiety": 0.4, "Neutral": 0.4, "Sadness": 0.2}],
+                        "confidence": 0.82
+                    },
+                    {
+                        "timestamp": 8.7,
+                        "emotions": [{"Concentration": 0.5, "Neutral": 0.4, "Anxiety": 0.1}],
+                        "confidence": 0.87
+                    },
+                    {
+                        "timestamp": 11.1,
+                        "emotions": [{"Relief": 0.6, "Neutral": 0.3, "Joy": 0.1}],
+                        "confidence": 0.84
+                    }
+                ],
+                "prosody_emotions": [
+                    {
+                        "timestamp": 3.2,
+                        "emotions": [{"Stress": 0.3, "Hesitation": 0.4, "Calmness": 0.3}],
+                        "confidence": 0.78
+                    },
+                    {
+                        "timestamp": 11.1,
+                        "emotions": [{"Confidence": 0.5, "Calmness": 0.4, "Relief": 0.1}],
+                        "confidence": 0.81
+                    }
+                ],
+                "burst_analysis": [
+                    {
+                        "timestamp": 4.5,
+                        "burst_type": "Sigh",
+                        "intensity": 0.6,
+                        "confidence": 0.73
+                    },
+                    {
+                        "timestamp": 12.0,
+                        "burst_type": "Breath",
+                        "intensity": 0.3,
+                        "confidence": 0.68
+                    }
+                ]
+            }
         }
     }
     

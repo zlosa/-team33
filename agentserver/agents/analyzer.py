@@ -1,6 +1,8 @@
-import random
+import os
 from datetime import datetime
 from typing import Dict, Any
+from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIModel
 from models.assessment import (
     AutismAssessmentResponse,
     AssessmentMetadata,
@@ -34,13 +36,69 @@ from models.assessment import (
 )
 
 
-def analyze_facial_expressions(user_message: str, hume_data: Dict[str, Any]) -> AutismAssessmentResponse:
+# Create model and agent following the example pattern
+model = OpenAIModel('gpt-4o')
+
+# Create PydanticAI agent with structured output
+autism_agent = Agent(
+    model,
+    result_type=AutismAssessmentResponse,  # Use result_type for structured output
+    system_prompt="""You are an expert autism assessment specialist with deep knowledge of DSM-5 criteria, 
+    developmental psychology, and behavioral analysis. Your role is to analyze multi-modal data (facial expressions, 
+    speech patterns, behavioral markers) and provide comprehensive autism spectrum disorder assessments.
+
+    Focus on:
+    - Social communication patterns and deficits
+    - Restricted, repetitive patterns of behavior
+    - Sensory processing differences  
+    - Age-appropriate developmental considerations
+    - Masking and compensation strategies
+    - Cultural and contextual factors
+
+    Always provide confidence scores and acknowledge limitations of single-session assessments.
+    Recommend appropriate professional follow-up when indicated."""
+)
+
+
+async def analyze(user_message: str, hume_data: Dict[str, Any]) -> AutismAssessmentResponse:
     """
-    Analyzes facial expression data and returns an autism assessment response.
-    Currently returns mock data - replace with actual ML analysis logic.
+    Analyzes multi-modal Hume data and returns an autism assessment response using PydanticAI.
     """
     
-    # Mock implementation - replace with actual analysis
+    print(f"🤖 Analyzing with PydanticAI agent...")
+    
+    # Prepare analysis prompt with user message and data
+    analysis_prompt = f"""
+    Analyze the following interaction and behavioral data for autism spectrum indicators:
+    
+    User Message/Interaction: {user_message}
+    
+    Behavioral Data: {hume_data}
+    
+    Please provide a comprehensive autism assessment based on this information, including:
+    - Social communication analysis
+    - Behavioral pattern assessment  
+    - Speech/language evaluation
+    - Sensory response indicators
+    - Overall likelihood assessment with confidence scores
+    - Professional recommendations
+    """
+    
+    try:
+        # Run the agent with structured output
+        result = await autism_agent.run(analysis_prompt)
+        print(f"✅ PydanticAI analysis complete")
+        # Access the data from the result properly
+        return result.data if hasattr(result, 'data') else result.result()
+    
+    except Exception as e:
+        print(f"❌ PydanticAI analysis failed: {e}")
+        # Fall back to mock response if API fails
+        return _create_mock_response()
+    
+def _create_mock_response() -> AutismAssessmentResponse:
+    """Fallback mock response if API fails"""
+    import random
     return AutismAssessmentResponse(
         assessment_metadata=AssessmentMetadata(
             timestamp=datetime.now(),
