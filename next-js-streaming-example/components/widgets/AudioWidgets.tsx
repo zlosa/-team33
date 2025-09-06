@@ -183,12 +183,7 @@ export function AudioWidgets({ modelName, recordingLengthMs, streamWindowLengthM
   return (
     <div>
       <div className="md:flex">
-        {!onTimeline && <TopEmotions emotions={emotions} />}
-        {onTimeline && (
-          <div className="ml-10">
-            <DiscreteTimeline predictions={predictions} />
-          </div>
-        )}
+        <TopEmotions emotions={emotions} />
       </div>
 
       <div>{status}</div>
