@@ -216,7 +216,8 @@ class ReliabilityFactors(BaseModel):
 class UncertaintyAnalysis(BaseModel):
     overall_confidence: float
     data_sufficiency: float
-    model_uncertainty: float
+    # Avoid Pydantic protected namespace by not starting with 'model_'
+    uncertainty_model_score: float
     conflicting_indicators: float
     reliability_factors: ReliabilityFactors
 

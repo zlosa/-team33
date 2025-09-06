@@ -32,6 +32,24 @@ async def analyze_expressions(request: dict):
     print(f"✅ Analysis complete - likelihood: {result.aggregate_scores.overall_autism_likelihood:.3f}")
     return result
 
+
+@app.post("/multimodal", response_model=AutismAssessmentResponse)
+async def analyze_multimodal(request: dict):
+    """Preferred endpoint: analyze multimodal inputs (face/audio/text)"""
+    print(f"🔄 Received multimodal request at {datetime.now()}")
+
+    user_message = request.get("user_message", "")
+    hume_data = request.get("hume_data", {})
+
+    print(f"💬 User message: {user_message[:100]}...")
+    print(f"📊 Hume data keys: {list(hume_data.keys())}")
+    print(f"📏 Total data size: {len(str(request))} chars")
+
+    result = analyze_facial_expressions(user_message, hume_data)
+
+    print(f"✅ Multimodal analysis complete - likelihood: {result.aggregate_scores.overall_autism_likelihood:.3f}")
+    return result
+
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}

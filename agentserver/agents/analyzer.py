@@ -175,7 +175,7 @@ def analyze_facial_expressions(user_message: str, hume_data: Dict[str, Any]) -> 
         uncertainty_analysis=UncertaintyAnalysis(
             overall_confidence=random.uniform(0.7, 0.8),
             data_sufficiency=random.uniform(0.8, 0.9),
-            model_uncertainty=random.uniform(0.1, 0.2),
+            uncertainty_model_score=random.uniform(0.1, 0.2),
             conflicting_indicators=random.uniform(0.2, 0.4),
             reliability_factors=ReliabilityFactors(
                 video_quality_impact=random.uniform(0.0, 0.1),
