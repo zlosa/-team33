@@ -34,7 +34,7 @@ from models.assessment import (
 )
 
 
-def analyze_facial_expressions(facial_expression_data: Dict[str, Any]) -> AutismAssessmentResponse:
+def analyze_facial_expressions(user_message: str, hume_data: Dict[str, Any]) -> AutismAssessmentResponse:
     """
     Analyzes facial expression data and returns an autism assessment response.
     Currently returns mock data - replace with actual ML analysis logic.

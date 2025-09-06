@@ -20,18 +20,27 @@ def test_health_endpoint():
         return False
 
 def test_analyze_endpoint():
-    """Test the analyze endpoint with mock facial expression data"""
+    """Test the analyze endpoint with mock user message and hume data"""
     print("\nTesting analyze endpoint...")
     
-    # Mock facial expression data (replace with actual structure from Hume API)
+    # Mock data with user_message and hume_data structure
     mock_data = {
-        "facial_expressions": [
-            {"joy": 0.8, "sadness": 0.1, "anger": 0.05, "fear": 0.05},
-            {"joy": 0.6, "sadness": 0.2, "anger": 0.1, "fear": 0.1},
-            {"joy": 0.9, "sadness": 0.05, "anger": 0.02, "fear": 0.03}
-        ],
-        "timestamp": datetime.now().isoformat(),
-        "video_duration": 120
+        "user_message": "Hello, I'm testing the autism assessment system. How are you doing today?",
+        "hume_data": {
+            "facial_expressions": [
+                {"joy": 0.8, "sadness": 0.1, "anger": 0.05, "fear": 0.05},
+                {"joy": 0.6, "sadness": 0.2, "anger": 0.1, "fear": 0.1},
+                {"joy": 0.9, "sadness": 0.05, "anger": 0.02, "fear": 0.03}
+            ],
+            "audio_features": {
+                "pitch_mean": 150.5,
+                "pitch_std": 25.3,
+                "volume_mean": 0.7,
+                "speech_rate": 3.2
+            },
+            "timestamp": datetime.now().isoformat(),
+            "video_duration": 120
+        }
     }
     
     try:

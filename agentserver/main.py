@@ -17,12 +17,17 @@ app.add_middleware(
 )
 
 @app.post("/analyze", response_model=AutismAssessmentResponse)
-async def analyze_expressions(facial_expression_data: dict):
+async def analyze_expressions(request: dict):
     print(f"🔄 Received analyze request at {datetime.now()}")
-    print(f"📊 Data keys: {list(facial_expression_data.keys())}")
-    print(f"📏 Data size: {len(str(facial_expression_data))} chars")
     
-    result = analyze_facial_expressions(facial_expression_data)
+    user_message = request.get("user_message", "")
+    hume_data = request.get("hume_data", {})
+    
+    print(f"💬 User message: {user_message[:100]}...")
+    print(f"📊 Hume data keys: {list(hume_data.keys())}")
+    print(f"📏 Total data size: {len(str(request))} chars")
+    
+    result = analyze_facial_expressions(user_message, hume_data)
     
     print(f"✅ Analysis complete - likelihood: {result.aggregate_scores.overall_autism_likelihood:.3f}")
     return result
