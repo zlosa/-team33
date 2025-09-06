@@ -122,19 +122,17 @@ export default function MultiModelPage() {
         Real-time analysis combining facial expressions, speech prosody, and vocal bursts using separate WebSocket connections.
       </div>
 
-      {/* Session Status */}
+      {/* Session Status - Backend Data Collection */}
       <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
         <div className="flex justify-between items-center">
           <div>
             <span className="text-sm font-medium">Session: {accumulatedData.sessionId}</span>
             <div className="text-xs text-gray-500 mt-1">
-              Face: {accumulatedData.faceEmotions.length} • 
-              Prosody: {accumulatedData.prosodyTimeline.length} • 
-              Burst: {accumulatedData.burstTimeline.length} data points
+              Collecting data for analysis in background...
             </div>
           </div>
           <div className={`px-3 py-1 rounded-full text-sm ${sessionActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-            {sessionActive ? 'Recording' : 'Session Complete'}
+            {sessionActive ? 'Collecting Data' : 'Ready for Analysis'}
           </div>
         </div>
       </div>
