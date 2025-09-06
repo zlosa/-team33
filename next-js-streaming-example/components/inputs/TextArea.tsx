@@ -23,10 +23,10 @@ export function TextArea({ className, inputClassName, text, placeholder, onChang
 
   return (
     <div
-      className={`flex items-center justify-between rounded-md border border-neutral-300 bg-white shadow duration-200 hover:ease-linear ${className}`}
+      className={`flex items-center justify-between rounded-md border border-neutral-300 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow duration-200 hover:ease-linear ${className}`}
     >
       <textarea
-        className={`text-md h-full w-full resize-none bg-transparent p-3 font-medium placeholder-neutral-300 shadow-sm outline-none ${inputClassName}`}
+        className={`text-md h-full w-full resize-none bg-transparent p-3 font-medium placeholder-neutral-300 dark:placeholder-neutral-500 shadow-sm outline-none ${inputClassName}`}
         value={text}
         placeholder={placeholder}
         onInput={onInput}

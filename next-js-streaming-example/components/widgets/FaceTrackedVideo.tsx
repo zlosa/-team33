@@ -74,7 +74,7 @@ export function FaceTrackedVideo({ className, trackedFaces, onVideoReady, width,
   }
 
   return (
-      <div className={`relative aspect-[4/3] w-full overflow-hidden rounded-lg border border-neutral-300 bg-black align-top shadow ${className}`}>
+  <div className={`relative aspect-[4/3] w-full overflow-hidden rounded-lg border border-neutral-300 dark:border-neutral-800 bg-black align-top shadow ${className}`}>
       <video className="absolute w-full h-full object-cover -scale-x-[1]" ref={videoRef} autoPlay playsInline></video>
       <canvas className="absolute w-full h-full" ref={canvasRef}></canvas>
     </div>

@@ -8,9 +8,9 @@
 
 ## Overview
 
-This repo contains a NextJS app for demoing and testing Hume APIs. It implements several streaming interfaces that provide an intuitive validation of model quality.
+This repo contains a NextJS app for Hueman AI. It implements several streaming interfaces that provide an intuitive validation of model quality.
 
-You can try it out here: https://hume-sandbox.netlify.app
+Production deployment URL: (set your production URL here)
 
 ## Requirements
 
@@ -27,4 +27,4 @@ Development mode will start serving on `localhost:3001`.
 
 ## Production
 
-The sandbox deploys on Netlify on merge to the main branch.
+The app deploys on Netlify on merge to the main branch.

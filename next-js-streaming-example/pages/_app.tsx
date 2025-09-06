@@ -14,14 +14,14 @@ import { Toolbar } from "../components/menu/Toolbar";
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
-      <Head>
-        <title>Hume AI | Sandbox</title>
-        <meta name="title" content="Hume AI | Sandbox" />
-        <meta name="description" content="Hume Sandbox" />
+    <Head>
+  <title>HUEMN AI</title>
+  <meta name="title" content="HUEMN AI" />
+  <meta name="description" content="HUEMN" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="min-w-screen min-h-screen bg-neutral-100 font-main font-thin text-neutral-800">
+  <div className="min-w-screen min-h-screen bg-neutral-100 dark:bg-black font-main font-thin text-neutral-800 dark:text-white">
         <Auth>
           <Nav />
           <div>

@@ -119,7 +119,7 @@ export function AudioWidgets({ modelName, recordingLengthMs, streamWindowLengthM
   async function socketOnError(event: Event) {
     console.error("Socket failed to connect: ", event);
     if (numReconnects.current > maxReconnects) {
-      setStatus(`Failed to connect to the Hume API (${authContext.environment}).
+    setStatus(`Failed to connect to the HUEMN API (${authContext.environment}).
       Please log out and verify that your API key is correct.`);
       stopEverything();
     } else {
