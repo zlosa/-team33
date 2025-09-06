@@ -15,9 +15,10 @@ import { getApiUrlWs } from "../../lib/utilities/environmentUtilities";
 
 type FaceWidgetsProps = {
   onCalibrate: Optional<(emotions: Emotion[]) => void>;
+  onEmotionUpdate?: (emotions: Emotion[], confidence: number) => void;
 };
 
-export function FaceWidgets({ onCalibrate }: FaceWidgetsProps) {
+export function FaceWidgets({ onCalibrate, onEmotionUpdate }: FaceWidgetsProps) {
   const authContext = useContext(AuthContext);
   const socketRef = useRef<WebSocket | null>(null);
   const recorderRef = useRef<VideoRecorder | null>(null);
@@ -114,6 +115,12 @@ export function FaceWidgets({ onCalibrate }: FaceWidgetsProps) {
           setEmotions(newEmotions);
           if (onCalibrate) {
             onCalibrate(newEmotions);
+          }
+          // Call the data collection callback
+          if (onEmotionUpdate) {
+            // Extract confidence from prediction if available, fallback to 0.8
+            const confidence = pred.confidence || 0.8;
+            onEmotionUpdate(newEmotions, confidence);
           }
         }
       });
