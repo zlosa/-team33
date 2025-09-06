@@ -104,20 +104,21 @@ export function FaceWidgets({ onCalibrate }: FaceWidgetsProps) {
     if (predictions.length === 0) {
       setStatus(warning.replace(".", ""));
       setEmotions([]);
-    }
-
-    const newTrackedFaces: TrackedFace[] = [];
-    predictions.forEach(async (pred: FacePrediction, dataIndex: number) => {
-      newTrackedFaces.push({ boundingBox: pred.bbox });
-      if (dataIndex === 0) {
-        const newEmotions = pred.emotions;
-        setEmotions(newEmotions);
-        if (onCalibrate) {
-          onCalibrate(newEmotions);
+      setTrackedFaces([]); // Explicitly clear tracked faces
+    } else {
+      const newTrackedFaces: TrackedFace[] = [];
+      predictions.forEach(async (pred: FacePrediction, dataIndex: number) => {
+        newTrackedFaces.push({ boundingBox: pred.bbox });
+        if (dataIndex === 0) {
+          const newEmotions = pred.emotions;
+          setEmotions(newEmotions);
+          if (onCalibrate) {
+            onCalibrate(newEmotions);
+          }
         }
-      }
-    });
-    setTrackedFaces(newTrackedFaces);
+      });
+      setTrackedFaces(newTrackedFaces);
+    }
 
     await capturePhoto();
   }
@@ -229,29 +230,27 @@ export function FaceWidgets({ onCalibrate }: FaceWidgetsProps) {
 
   return (
     <div>
-      <div className="md:flex">
-        <FaceTrackedVideo
-          className="mb-6"
-          onVideoReady={onVideoReady}
-          trackedFaces={trackedFaces}
-          width={500}
-          height={375}
-        />
-        {!onCalibrate && (
-          <div className="ml-10">
-            <TopEmotions emotions={emotions} />
-            <LoaderSet
-              className="mt-8 ml-5"
-              emotionNames={loaderNames}
-              emotions={emotions}
-              numLevels={numLoaderLevels}
-            />
-            <Descriptor className="mt-8" emotions={emotions} />
-          </div>
-        )}
-      </div>
+      <FaceTrackedVideo
+        className="mb-4"
+        onVideoReady={onVideoReady}
+        trackedFaces={trackedFaces}
+        width={500}
+        height={375}
+      />
+      {!onCalibrate && (
+        <div>
+          <TopEmotions emotions={emotions} />
+          <LoaderSet
+            className="mt-4"
+            emotionNames={loaderNames}
+            emotions={emotions}
+            numLevels={numLoaderLevels}
+          />
+          <Descriptor className="mt-4" emotions={emotions} />
+        </div>
+      )}
 
-      <div className="pt-6">{status}</div>
+      <div className="pt-4">{status}</div>
       <canvas className="hidden" ref={photoRef}></canvas>
     </div>
   );

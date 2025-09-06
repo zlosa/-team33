@@ -10,6 +10,7 @@ export function Nav() {
 
         <div className="text-xs hidden md:block lg:text-sm">
           <NavItem route="/" name="Home" />
+          <NavItem route="/multimodel" name="Multi-Model" />
           <NavItem route="/face" name="Facial Expression" />
           <NavItem route="/burst" name="Vocal Burst" />
           <NavItem route="/prosody" name="Speech Prosody" />
