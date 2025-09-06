@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from models.assessment import AutismAssessmentResponse
+from models.flat_assessment import FlatAutismAssessment
 from agents.analyzer import analyze
 from datetime import datetime
 from dotenv import load_dotenv
@@ -19,8 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-@app.post("/analyze", response_model=AutismAssessmentResponse)
+@app.post("/analyze", response_model=FlatAutismAssessment)
 async def analyze_expressions(request: dict):
     print(f"🔄 Received analyze request at {datetime.now()}")
 
@@ -32,10 +31,8 @@ async def analyze_expressions(request: dict):
     print(f"📏 Total data size: {len(str(request))} chars")
 
     result = await analyze(conversation_data, hume_data)
-
-    print(
-        f"✅ Analysis complete - likelihood: {result.aggregate_scores.overall_autism_likelihood:.3f}"
-    )
+    
+    print(f"✅ Analysis complete - likelihood: {result.overall_autism_likelihood:.3f}")
     return result
 
 

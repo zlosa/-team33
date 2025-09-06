@@ -15,9 +15,12 @@ type AccumulatedData = {
 };
 
 type AnalysisResult = {
-  aggregate_scores: { overall_autism_likelihood: number };
-  uncertainty_analysis: { overall_confidence: number };
-  recommendations: { professional_evaluation_priority: string };
+  overall_autism_likelihood: number;
+  assessment_confidence: number;
+  evaluation_priority: string;
+  primary_concerns: string;
+  observed_strengths: string;
+  key_recommendations: string;
   [key: string]: any;
 };
 
@@ -198,19 +201,19 @@ export default function MultiModelPage() {
             <div className="bg-blue-50 p-4 rounded-lg">
               <div className="text-sm text-blue-600 font-medium">Autism Likelihood</div>
               <div className="text-2xl font-bold text-blue-800">
-                {(analysisResult.aggregate_scores.overall_autism_likelihood * 100).toFixed(1)}%
+                {(analysisResult.overall_autism_likelihood * 100).toFixed(1)}%
               </div>
             </div>
             <div className="bg-green-50 p-4 rounded-lg">
               <div className="text-sm text-green-600 font-medium">Assessment Confidence</div>
               <div className="text-2xl font-bold text-green-800">
-                {(analysisResult.uncertainty_analysis.overall_confidence * 100).toFixed(1)}%
+                {(analysisResult.assessment_confidence * 100).toFixed(1)}%
               </div>
             </div>
             <div className="bg-orange-50 p-4 rounded-lg">
               <div className="text-sm text-orange-600 font-medium">Evaluation Priority</div>
               <div className="text-lg font-bold text-orange-800 capitalize">
-                {analysisResult.recommendations.professional_evaluation_priority}
+                {analysisResult.evaluation_priority}
               </div>
             </div>
           </div>

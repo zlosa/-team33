@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import List, Literal
 from datetime import datetime
 
@@ -56,10 +56,10 @@ class ScoreWithConfidence(BaseModel):
 
 
 class EyeContact(BaseModel):
-    frequency_score: float = Field(ge=0, le=1)
-    duration_consistency: float = Field(ge=0, le=1)
-    appropriateness_timing: float = Field(ge=0, le=1)
-    confidence: float = Field(ge=0, le=1)
+    frequency_score: float
+    duration_consistency: float
+    appropriateness_timing: float
+    confidence: float
 
 
 class FacialExpressions(BaseModel):
