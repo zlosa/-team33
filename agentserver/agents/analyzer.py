@@ -2,35 +2,21 @@ import os
 from datetime import datetime
 from typing import Dict, Any
 from dotenv import load_dotenv
-from pydantic_ai import Agent
-from pydantic_ai.models.google import GoogleModel
+try:
+    from pydantic_ai import Agent  # type: ignore
+    from pydantic_ai.models.google import GoogleModel  # type: ignore
+except Exception as _e:  # noqa: N816
+    Agent = None  # type: ignore
+    GoogleModel = None  # type: ignore
+    _PYDANTIC_AI_IMPORT_ERROR = _e
 
 # Load environment variables
 load_dotenv()
 from models.flat_assessment import FlatAutismAssessment
 
 
-# Create PydanticAI agent with structured output and retries using Gemini 2.5 Pro (1M context window)
-# Note: GOOGLE_API_KEY environment variable is automatically used by GoogleModel
-autism_agent = Agent(
-    GoogleModel('gemini-2.5-pro'),
-    output_type=FlatAutismAssessment,
-    output_retries=3,  # Built-in PydanticAI retries
-    system_prompt="""You are an expert autism assessment specialist with deep knowledge of DSM-5 criteria, 
-    developmental psychology, and behavioral analysis. Your role is to analyze multi-modal data (facial expressions, 
-    speech patterns, behavioral markers) and provide comprehensive autism spectrum disorder assessments.
-
-    Focus on:
-    - Social communication patterns and deficits
-    - Restricted, repetitive patterns of behavior
-    - Sensory processing differences  
-    - Age-appropriate developmental considerations
-    - Masking and compensation strategies
-    - Cultural and contextual factors
-
-    Always provide confidence scores and acknowledge limitations of single-session assessments.
-    Recommend appropriate professional follow-up when indicated.""",
-)
+# Create PydanticAI agent lazily to avoid hard dependency at import time
+autism_agent = None
 
 
 async def analyze(conversation_data: Dict[str, Any], hume_data: Dict[str, Any]) -> FlatAutismAssessment:
@@ -102,22 +88,49 @@ async def analyze(conversation_data: Dict[str, Any], hume_data: Dict[str, Any]) 
     - Every numeric field in the response must be a decimal between 0.0 and 1.0
     """
 
+    # Initialize agent lazily if available
+    global autism_agent
+    if autism_agent is None and Agent is not None and GoogleModel is not None:
+        try:
+            # Note: GOOGLE_API_KEY is picked up from env by GoogleModel
+            autism_agent = Agent(
+                GoogleModel('gemini-2.5-pro'),
+                output_type=FlatAutismAssessment,
+                output_retries=3,
+                system_prompt="""You are an expert autism assessment specialist with deep knowledge of DSM-5 criteria, 
+                developmental psychology, and behavioral analysis. Your role is to analyze multi-modal data (facial expressions, 
+                speech patterns, behavioral markers) and provide comprehensive autism spectrum disorder assessments.
+
+                Focus on:
+                - Social communication patterns and deficits
+                - Restricted, repetitive patterns of behavior
+                - Sensory processing differences  
+                - Age-appropriate developmental considerations
+                - Masking and compensation strategies
+                - Cultural and contextual factors
+
+                Always provide confidence scores and acknowledge limitations of single-session assessments.
+                Recommend appropriate professional follow-up when indicated.""",
+            )
+        except Exception as e:
+            print(f"⚠️ Failed to initialize PydanticAI Agent: {e}")
+
+    if autism_agent is None:
+        # pydantic_ai not available; return fallback to keep API responsive
+        if '_PYDANTIC_AI_IMPORT_ERROR' in globals():
+            print(f"❌ pydantic_ai unavailable: {_PYDANTIC_AI_IMPORT_ERROR}")
+        print("🔄 Returning fallback assessment response.")
+        return _create_mock_response()
+
     try:
         print("🤖 Running PydanticAI agent with built-in retries...")
-
-        # PydanticAI handles retries automatically with output_retries=3
         result = await autism_agent.run(analysis_prompt)
-
-        # Extract result data using proper PydanticAI API
         assessment = result.output
-        
-        print(f"✅ Analysis successful")
+        print("✅ Analysis successful")
         print(f"📈 Assessment confidence: {assessment.assessment_confidence:.3f}")
         print(f"🎯 Autism likelihood: {assessment.overall_autism_likelihood:.3f}")
         print(f"⚠️  Evaluation priority: {assessment.evaluation_priority}")
-        
         return assessment
-
     except Exception as e:
         print(f"❌ PydanticAI analysis failed after retries: {e}")
         print("🔄 Generating fallback assessment...")
