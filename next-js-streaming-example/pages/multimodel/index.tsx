@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { FaceWidgets } from "../../components/widgets/FaceWidgets";
 import { ProsodyWidgets } from "../../components/widgets/ProsodyWidgets";
 import { BurstWidgets } from "../../components/widgets/BurstWidgets";
+import AssessmentDetails from "../../components/AssessmentDetails";
 import type { Emotion } from "../../lib/data/emotion";
 import type { AudioPrediction } from "../../lib/data/audioPrediction";
 import { CVIProvider, Conversation, createConversation, endConversation, useRequestPermissions, WelcomeScreen } from "../../components/avatar";
@@ -17,10 +18,13 @@ type AccumulatedData = {
 };
 
 type AnalysisResult = {
-  aggregate_scores: { overall_autism_likelihood: number };
-  uncertainty_analysis: { overall_confidence: number };
-  recommendations: { professional_evaluation_priority: string };
-  [key: string]: unknown;
+  overall_autism_likelihood: number;
+  assessment_confidence: number;
+  evaluation_priority: string;
+  primary_concerns: string;
+  observed_strengths: string;
+  key_recommendations: string;
+  [key: string]: any;
 };
 
 // Avatar conversation management using exact original pattern
@@ -125,8 +129,8 @@ function AvatarSectionInner({ onConversationStart, onConversationEnd }: {
 
 export default function MultiModelPage() {
   const [accumulatedData, setAccumulatedData] = useState<AccumulatedData>({
-    sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    startTime: Date.now(),
+    sessionId: "",
+    startTime: 0,
     faceEmotions: [],
     prosodyTimeline: [],
     burstTimeline: [],
@@ -134,8 +138,46 @@ export default function MultiModelPage() {
 
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [sessionActive, setSessionActive] = useState(true);
+  const [sessionActive, setSessionActive] = useState(false);
   const [avatarActive, setAvatarActive] = useState(false);
+
+  const hasData =
+    accumulatedData.faceEmotions.length > 0 ||
+    accumulatedData.prosodyTimeline.length > 0 ||
+    accumulatedData.burstTimeline.length > 0;
+
+  // Button styles
+  const btnBase =
+    "inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 font-semibold transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2";
+  const btnPrimary = "bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500";
+  const btnSuccess = "bg-green-600 hover:bg-green-700 text-white focus:ring-green-500";
+  const btnWarn = "bg-yellow-500 hover:bg-yellow-600 text-white focus:ring-yellow-500";
+  const btnNeutral = "bg-neutral-200 hover:bg-neutral-300 text-neutral-800 focus:ring-neutral-400";
+  const btnDisabled = "opacity-60 cursor-not-allowed";
+
+  const startSession = () => {
+    setAnalysisResult(null);
+    setAccumulatedData({
+      sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      startTime: Date.now(),
+      faceEmotions: [],
+      prosodyTimeline: [],
+      burstTimeline: [],
+    });
+    setSessionActive(true);
+  };
+
+  const stopRecording = () => {
+    setSessionActive(false);
+  };
+
+  const resumeRecording = () => {
+    if (accumulatedData.sessionId) {
+      setSessionActive(true);
+    } else {
+      startSession();
+    }
+  };
 
   // Callback for face emotion updates
   const handleFaceEmotions = (emotions: Emotion[], confidence: number = 0.8) => {
@@ -234,11 +276,13 @@ export default function MultiModelPage() {
         Interactive AI avatar conversation with real-time multimodal analysis. Combines avatar video chat with facial expressions, speech prosody, and vocal burst detection for comprehensive autism assessment.
       </div>
 
-      {/* Session Status */}
+      {/* Session Status - Backend Data Collection */}
       <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
         <div className="flex justify-between items-center">
           <div>
-            <span className="text-sm font-medium">Session: {accumulatedData.sessionId}</span>
+            <span className="text-sm font-medium">
+              {accumulatedData.sessionId ? `Session: ${accumulatedData.sessionId}` : 'Session: (idle)'}
+            </span>
             <div className="text-xs text-gray-500 mt-1">
               Face: {accumulatedData.faceEmotions.length} • 
               Prosody: {accumulatedData.prosodyTimeline.length} • 
@@ -246,12 +290,19 @@ export default function MultiModelPage() {
               {avatarActive && ' • Avatar: Active'}
             </div>
           </div>
-          <div className={`px-3 py-1 rounded-full text-sm ${sessionActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-            {sessionActive ? 'Recording' : 'Session Complete'}
+          <div className={`px-3 py-1 rounded-full text-sm ${
+            sessionActive
+              ? 'bg-green-100 text-green-800'
+              : hasData
+              ? 'bg-yellow-100 text-yellow-800'
+              : 'bg-gray-100 text-gray-800'
+          }`}>
+            {sessionActive ? 'Collecting Data' : hasData ? 'Ready for Analysis' : 'Idle'}
           </div>
         </div>
       </div>
       
+      {sessionActive && (
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
         {/* Position 1: Facial Expression Section */}
         <div className="bg-white border border-neutral-200 rounded-lg p-6">
@@ -282,35 +333,90 @@ export default function MultiModelPage() {
           <BurstWidgets onTimeline={handleBurstData} />
         </div>
       </div>
+      )}
 
       {/* Analysis Controls */}
       <div className="mt-8 text-center">
-        <button
-          onClick={handleAnalysis}
-          disabled={isAnalyzing || !sessionActive || (accumulatedData.faceEmotions.length === 0 && accumulatedData.prosodyTimeline.length === 0 && accumulatedData.burstTimeline.length === 0)}
-          className={`px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-200 ${
-            isAnalyzing 
-              ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
-              : sessionActive
-              ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl'
-              : 'bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl'
-          }`}
-        >
-          {isAnalyzing ? (
-            <>
-              <span className="inline-block animate-spin mr-2">⏳</span>
-              Analyzing...
-            </>
-          ) : sessionActive ? (
-            'Complete Analysis'
-          ) : (
-            'Analysis Complete'
-          )}
-        </button>
+        {!sessionActive && !hasData && (
+          <>
+            <button
+              onClick={startSession}
+              disabled={isAnalyzing}
+              className={`${btnBase} ${btnSuccess} ${isAnalyzing ? btnDisabled : ''}`}
+            >
+              <span className="text-lg">▶️</span>
+              <span>Start Recording</span>
+            </button>
+            <div className="mt-2 text-sm text-gray-600">
+              Click to begin recording from your camera and microphone
+            </div>
+          </>
+        )}
+
         {sessionActive && (
-          <div className="mt-2 text-sm text-gray-600">
-            Collect some data from the widgets above, then click to analyze
-          </div>
+          <>
+            <div className="flex items-center justify-center gap-4">
+              <button
+                onClick={handleAnalysis}
+                disabled={isAnalyzing || !hasData}
+                className={`${btnBase} ${btnPrimary} ${isAnalyzing || !hasData ? btnDisabled : ''}`}
+              >
+                {isAnalyzing ? (
+                  <>
+                    <span className="inline-block animate-spin">⏳</span>
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    <span className="text-lg">✅</span>
+                    <span>Complete Analysis</span>
+                  </>
+                )}
+              </button>
+              <button
+                onClick={stopRecording}
+                disabled={isAnalyzing}
+                className={`${btnBase} ${btnNeutral} ${isAnalyzing ? btnDisabled : ''}`}
+              >
+                <span className="text-lg">⏸️</span>
+                <span>Stop Recording</span>
+              </button>
+            </div>
+            <div className="mt-2 text-sm text-gray-600">
+              Collect some data from the widgets above, then click to analyze
+            </div>
+          </>
+        )}
+
+        {!sessionActive && hasData && (
+          <>
+            <div className="flex items-center justify-center gap-4 flex-wrap">
+              <button
+                onClick={handleAnalysis}
+                className={`${btnBase} ${btnPrimary}`}
+              >
+                <span className="text-lg">✅</span>
+                <span>Complete Analysis</span>
+              </button>
+              <button
+                onClick={resumeRecording}
+                className={`${btnBase} ${btnWarn}`}
+              >
+                <span className="text-lg">🔁</span>
+                <span>Resume Recording</span>
+              </button>
+              <button
+                onClick={startSession}
+                className={`${btnBase} ${btnSuccess}`}
+              >
+                <span className="text-lg">▶️</span>
+                <span>Start New Session</span>
+              </button>
+            </div>
+            <div className="mt-2 text-sm text-gray-600">
+              Recording stopped. Resume to continue this session, complete analysis, or start a new one.
+            </div>
+          </>
         )}
       </div>
 
@@ -324,19 +430,19 @@ export default function MultiModelPage() {
             <div className="bg-blue-50 p-4 rounded-lg">
               <div className="text-sm text-blue-600 font-medium">Autism Likelihood</div>
               <div className="text-2xl font-bold text-blue-800">
-                {(analysisResult.aggregate_scores.overall_autism_likelihood * 100).toFixed(1)}%
+                {(analysisResult.overall_autism_likelihood * 100).toFixed(1)}%
               </div>
             </div>
             <div className="bg-green-50 p-4 rounded-lg">
               <div className="text-sm text-green-600 font-medium">Assessment Confidence</div>
               <div className="text-2xl font-bold text-green-800">
-                {(analysisResult.uncertainty_analysis.overall_confidence * 100).toFixed(1)}%
+                {(analysisResult.assessment_confidence * 100).toFixed(1)}%
               </div>
             </div>
             <div className="bg-orange-50 p-4 rounded-lg">
               <div className="text-sm text-orange-600 font-medium">Evaluation Priority</div>
               <div className="text-lg font-bold text-orange-800 capitalize">
-                {analysisResult.recommendations.professional_evaluation_priority}
+                {analysisResult.evaluation_priority}
               </div>
             </div>
           </div>
@@ -346,9 +452,9 @@ export default function MultiModelPage() {
             <summary className="cursor-pointer font-medium text-gray-700 hover:text-gray-900">
               View Full Assessment Details
             </summary>
-            <pre className="mt-4 text-xs text-gray-600 overflow-auto max-h-96 bg-white p-3 rounded border">
-              {JSON.stringify(analysisResult, null, 2)}
-            </pre>
+            <div className="mt-4">
+              <AssessmentDetails data={analysisResult} />
+            </div>
           </details>
         </div>
       )}

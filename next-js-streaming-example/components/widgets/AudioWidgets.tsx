@@ -160,7 +160,10 @@ export function AudioWidgets({ modelName, recordingLengthMs, streamWindowLengthM
     }
 
     if (socket.readyState === WebSocket.OPEN) {
-      const combinedBlob = new Blob(audioBufferRef.current);
+      const firstBlob = audioBufferRef.current[0];
+      const combinedBlob = new Blob(audioBufferRef.current, { 
+        type: firstBlob?.type || 'audio/webm' 
+      });
       serverReadyRef.current = false;
       audioBufferRef.current = [];
 
@@ -183,12 +186,7 @@ export function AudioWidgets({ modelName, recordingLengthMs, streamWindowLengthM
   return (
     <div>
       <div className="md:flex">
-        {!onTimeline && <TopEmotions emotions={emotions} />}
-        {onTimeline && (
-          <div className="ml-10">
-            <DiscreteTimeline predictions={predictions} />
-          </div>
-        )}
+        <TopEmotions emotions={emotions} />
       </div>
 
       <div>{status}</div>
