@@ -1,9 +1,11 @@
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import { FaceWidgets } from "../../components/widgets/FaceWidgets";
 import { ProsodyWidgets } from "../../components/widgets/ProsodyWidgets";
 import { BurstWidgets } from "../../components/widgets/BurstWidgets";
-import { Emotion } from "../../lib/data/emotion";
-import { AudioPrediction } from "../../lib/data/audioPrediction";
+import type { Emotion } from "../../lib/data/emotion";
+import type { AudioPrediction } from "../../lib/data/audioPrediction";
+import { CVIProvider, Conversation, createConversation, endConversation, useRequestPermissions, WelcomeScreen } from "../../components/avatar";
+import type { IConversation } from "../../components/avatar";
 
 // Data accumulation types
 type AccumulatedData = {
@@ -18,8 +20,108 @@ type AnalysisResult = {
   aggregate_scores: { overall_autism_likelihood: number };
   uncertainty_analysis: { overall_confidence: number };
   recommendations: { professional_evaluation_priority: string };
-  [key: string]: any;
+  [key: string]: unknown;
 };
+
+// Avatar conversation management using exact original pattern
+function AvatarSection({ onConversationStart, onConversationEnd }: { 
+  onConversationStart: () => void; 
+  onConversationEnd: () => void; 
+}) {
+  return (
+    <div className="w-full bg-white border border-neutral-200 rounded-lg overflow-hidden">
+      <CVIProvider>
+        <AvatarSectionInner 
+          onConversationStart={onConversationStart} 
+          onConversationEnd={onConversationEnd} 
+        />
+      </CVIProvider>
+    </div>
+  );
+}
+
+// Inner component that has access to Daily context
+function AvatarSectionInner({ onConversationStart, onConversationEnd }: { 
+  onConversationStart: () => void; 
+  onConversationEnd: () => void; 
+}) {
+  const [apiKey, setApiKey] = useState<string | null>(null);
+  const [screen, setScreen] = useState<'welcome' | 'call'>('welcome');
+  const [conversation, setConversation] = useState<IConversation | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const requestPermissions = useRequestPermissions();
+
+  useEffect(() => {
+    return () => {
+      if (conversation && apiKey) {
+        void endConversation(conversation.conversation_id, apiKey);
+      }
+    };
+  }, [conversation, apiKey]);
+
+  const handleEnd = async () => {
+    try {
+      setScreen('welcome');
+      if (!conversation || !apiKey) return;
+      await endConversation(conversation.conversation_id, apiKey);
+      onConversationEnd();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setConversation(null);
+    }
+  };
+
+  const handleJoin = async (token: string) => {
+    try {
+      setApiKey(token);
+      localStorage.setItem('token', token);
+      setLoading(true);
+      await requestPermissions();
+      if (!token) {
+        alert('API key not found. Please set your API key.');
+        return;
+      }
+      console.log('Creating conversation with token:', token);
+      const conversation = await createConversation(token);
+      console.log('Conversation created successfully:', conversation);
+      setConversation(conversation);
+      setScreen('call');
+      onConversationStart();
+    } catch (error) {
+      console.error('Avatar conversation error:', error);
+      
+      // Handle specific Tavus API errors
+      if (error instanceof Error && error.message.includes('maximum concurrent conversations')) {
+        alert('⚠️ Maximum concurrent conversations reached.\n\nYour Tavus account has too many active conversations. Please:\n1. Wait a few minutes for previous conversations to end automatically\n2. Or check your Tavus dashboard to end active conversations\n3. Try starting the avatar again');
+      } else if (error instanceof Error && error.message.includes('Tavus API error (401)')) {
+        alert('🔑 Invalid API Key\n\nPlease check that your Tavus API key is correct and has proper permissions.');
+      } else if (error instanceof Error && error.message.includes('Tavus API error (403)')) {
+        alert('🚫 Access Forbidden\n\nYour Tavus API key does not have permission to create conversations.');
+      } else {
+        alert(`Uh oh! Something went wrong: ${error instanceof Error ? error.message : 'Unknown error'}. Check console for details`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      {screen === 'welcome' && (
+        <div className="h-96">
+          <WelcomeScreen onStart={handleJoin} loading={loading} />
+        </div>
+      )}
+      {screen === 'call' && conversation && (
+        <div className="h-96">
+          <Conversation conversationUrl={conversation.conversation_url} onLeave={handleEnd} />
+        </div>
+      )}
+    </>
+  );
+}
 
 export default function MultiModelPage() {
   const [accumulatedData, setAccumulatedData] = useState<AccumulatedData>({
@@ -33,6 +135,7 @@ export default function MultiModelPage() {
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [sessionActive, setSessionActive] = useState(true);
+  const [avatarActive, setAvatarActive] = useState(false);
 
   // Callback for face emotion updates
   const handleFaceEmotions = (emotions: Emotion[], confidence: number = 0.8) => {
@@ -60,6 +163,15 @@ export default function MultiModelPage() {
       ...prev,
       burstTimeline: [...prev.burstTimeline, ...predictions]
     }));
+  };
+
+  // Avatar conversation callbacks
+  const handleAvatarStart = () => {
+    setAvatarActive(true);
+  };
+
+  const handleAvatarEnd = () => {
+    setAvatarActive(false);
   };
 
   // Send data to agent server for analysis
@@ -117,9 +229,9 @@ export default function MultiModelPage() {
 
   return (
     <div className="px-6 pt-10 pb-20 sm:px-10 md:px-14">
-      <div className="pb-6 text-2xl font-medium text-neutral-800">Multi-Model Real-time Analysis</div>
+      <div className="pb-6 text-2xl font-medium text-neutral-800">Avatar-Based Multi-Modal Analysis</div>
       <div className="pb-6 text-neutral-600">
-        Real-time analysis combining facial expressions, speech prosody, and vocal bursts using separate WebSocket connections.
+        Interactive AI avatar conversation with real-time multimodal analysis. Combines avatar video chat with facial expressions, speech prosody, and vocal burst detection for comprehensive autism assessment.
       </div>
 
       {/* Session Status */}
@@ -131,6 +243,7 @@ export default function MultiModelPage() {
               Face: {accumulatedData.faceEmotions.length} • 
               Prosody: {accumulatedData.prosodyTimeline.length} • 
               Burst: {accumulatedData.burstTimeline.length} data points
+              {avatarActive && ' • Avatar: Active'}
             </div>
           </div>
           <div className={`px-3 py-1 rounded-full text-sm ${sessionActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
@@ -139,20 +252,31 @@ export default function MultiModelPage() {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {/* Facial Expression Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
+        {/* Position 1: Facial Expression Section */}
         <div className="bg-white border border-neutral-200 rounded-lg p-6">
           <h2 className="text-xl font-medium text-neutral-700 mb-4">Facial Expression Analysis</h2>
           <FaceWidgets onEmotionUpdate={handleFaceEmotions} />
         </div>
 
-        {/* Speech Prosody Section */}
+        {/* Position 2: Avatar Conversation Section */}
+        <div className="bg-white border border-neutral-200 rounded-lg p-6">
+          <h2 className="text-xl font-medium text-neutral-700 mb-4">Avatar Conversation</h2>
+          <div className="h-96">
+            <AvatarSection 
+              onConversationStart={handleAvatarStart}
+              onConversationEnd={handleAvatarEnd}
+            />
+          </div>
+        </div>
+
+        {/* Position 3: Speech Prosody Section */}
         <div className="bg-white border border-neutral-200 rounded-lg p-6">
           <h2 className="text-xl font-medium text-neutral-700 mb-4">Speech Prosody Analysis</h2>
           <ProsodyWidgets onTimelineUpdate={handleProsodyData} />
         </div>
 
-        {/* Vocal Burst Section */}
+        {/* Position 4: Vocal Burst Section */}
         <div className="bg-white border border-neutral-200 rounded-lg p-6">
           <h2 className="text-xl font-medium text-neutral-700 mb-4">Vocal Burst Analysis</h2>
           <BurstWidgets onTimeline={handleBurstData} />

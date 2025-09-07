@@ -1,0 +1,155 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	position: relative;
+}
+
+.videoContainer {
+	flex: 1;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.errorContainer {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background: rgba(255, 255, 255, 0.9);
+	padding: 2rem;
+	border-radius: 12px;
+	text-align: center;
+	z-index: 100;
+}
+
+.mainVideoContainer {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+}
+
+.mainVideo {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: 12px;
+}
+
+.mainVideoScreenSharing {
+	object-fit: contain;
+}
+
+.mainVideoHidden {
+	visibility: hidden;
+}
+
+.mainVideoContainerScreenSharing {
+	background: #000;
+}
+
+.waitingContainer {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	color: white;
+	font-size: 1.5rem;
+}
+
+.selfViewContainer {
+	position: absolute;
+	top: 1rem;
+	right: 1rem;
+	z-index: 10;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.previewVideoContainer {
+	width: 160px;
+	height: 120px;
+	border-radius: 12px;
+	overflow: hidden;
+	position: relative;
+	background: rgba(0, 0, 0, 0.3);
+	border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.previewVideoContainerVertical {
+	width: 90px;
+	height: 160px;
+}
+
+.previewVideoContainerHidden {
+	background: rgba(0, 0, 0, 0.5);
+}
+
+.previewVideo {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.previewVideoVertical {
+	object-fit: cover;
+}
+
+.previewVideoHidden {
+	visibility: hidden;
+}
+
+.audioWaveContainer {
+	position: absolute;
+	bottom: 0.5rem;
+	right: 0.5rem;
+}
+
+.footer {
+	padding: 1.5rem;
+	background: rgba(255, 255, 255, 0.1);
+	backdrop-filter: blur(10px);
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footerControls {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 1rem;
+	max-width: 600px;
+	margin: 0 auto;
+}
+
+.leaveButton {
+	height: 3rem;
+	width: 3rem;
+	border-radius: 50%;
+	background-color: #dc2626;
+	border: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.leaveButton:hover {
+	background-color: #b91c1c;
+	transform: scale(1.05);
+}
+
+.leaveButtonIcon {
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
