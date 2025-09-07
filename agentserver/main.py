@@ -19,6 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.post("/analyze", response_model=FlatAutismAssessment)
 async def analyze_expressions(request: dict):
     print(f"🔄 Received analyze request at {datetime.now()}")
@@ -31,7 +32,7 @@ async def analyze_expressions(request: dict):
     print(f"📏 Total data size: {len(str(request))} chars")
 
     result = await analyze(conversation_data, hume_data)
-    
+
     print(f"✅ Analysis complete - likelihood: {result.overall_autism_likelihood:.3f}")
     return result
 
