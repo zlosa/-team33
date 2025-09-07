@@ -19,15 +19,14 @@ pydantic_ai_stub.Agent = DummyAgent
 sys.modules.setdefault("pydantic_ai", pydantic_ai_stub)
 
 from agents import analyzer
-from models.assessment import AutismAssessmentResponse
+from models.flat_assessment import FlatAutismAssessment
 
 
 def test_create_mock_response_structure():
     response = analyzer._create_mock_response()
-    assert isinstance(response, AutismAssessmentResponse)
-    eye = response.social_communication_markers.eye_contact
-    assert 0 <= eye.frequency_score <= 1
-    assert 0 <= response.aggregate_scores.overall_autism_likelihood <= 1
+    assert isinstance(response, FlatAutismAssessment)
+    assert 0 <= response.eye_contact_score <= 1
+    assert 0 <= response.overall_autism_likelihood <= 1
 
 
 def test_analyze_fallback_called(monkeypatch):
@@ -36,8 +35,22 @@ def test_analyze_fallback_called(monkeypatch):
 
     sentinel = analyzer._create_mock_response()
 
-    monkeypatch.setattr(analyzer.autism_agent, "run", failing_run)
+    dummy_agent = types.SimpleNamespace(run=failing_run)
+    monkeypatch.setattr(analyzer, "autism_agent", dummy_agent)
     monkeypatch.setattr(analyzer, "_create_mock_response", lambda: sentinel)
 
     result = asyncio.run(analyzer.analyze({}, {}))
     assert result is sentinel
+
+
+def test_analyze_success(monkeypatch):
+    sample = analyzer._create_mock_response()
+
+    class DummyAgent:
+        async def run(self, prompt):
+            return types.SimpleNamespace(data=sample)
+
+    monkeypatch.setattr(analyzer, "autism_agent", DummyAgent())
+
+    result = asyncio.run(analyzer.analyze({}, {}))
+    assert result is sample

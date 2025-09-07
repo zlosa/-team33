@@ -46,4 +46,4 @@ def test_analyze_endpoint(monkeypatch):
     response = client.post("/analyze", json=payload)
     assert response.status_code == 200
     data = response.json()
-    assert data["aggregate_scores"]["overall_autism_likelihood"] == sample.aggregate_scores.overall_autism_likelihood
+    assert data["overall_autism_likelihood"] == sample.overall_autism_likelihood
