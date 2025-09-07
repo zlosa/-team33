@@ -51,6 +51,14 @@ export default function Home() {
               <a href="#support" className="text-muted-foreground hover:text-foreground transition-colors">
                 Support
               </a>
+              <a
+                href="http://localhost:3001/multimodel"
+                className="text-primary hover:text-primary/80 transition-colors"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Multimodal Demo ↗
+              </a>
             </div>
           </div>
         </div>
@@ -89,6 +97,16 @@ export default function Home() {
               data-testid="button-start-session"
             >
               {createSessionMutation.isPending ? "Starting..." : "⚡ Full AI Detection Session"}
+            </Button>
+            <Button asChild size="lg" variant="secondary" className="px-8 py-4 text-lg font-semibold">
+              <a
+                href="http://localhost:3001/multimodel"
+                target="_blank"
+                rel="noreferrer"
+                data-testid="button-open-multimodal"
+              >
+                🎥 Open Multimodal Analyzer
+              </a>
             </Button>
           </div>
         </div>

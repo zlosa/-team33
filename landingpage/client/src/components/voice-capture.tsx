@@ -23,7 +23,7 @@ export default function VoiceCapture({ sessionId }: VoiceCaptureProps) {
   const { requestMicrophone, isSupported, error } = useMediaCapture();
 
   // Fetch existing voice analyses
-  const { data: analyses = [] } = useQuery({
+  const { data: analyses = [] } = useQuery<VoiceAnalysis[]>({
     queryKey: ["/api/voice-analysis/session", sessionId],
     refetchInterval: isRecording ? 5000 : false,
   });
