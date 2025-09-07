@@ -1,7 +1,8 @@
-import os
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
 from dotenv import load_dotenv
+from models.flat_assessment import FlatAutismAssessment
+
 try:
     from pydantic_ai import Agent  # type: ignore
 except Exception as _e:  # noqa: N816
@@ -10,14 +11,15 @@ except Exception as _e:  # noqa: N816
 
 # Load environment variables
 load_dotenv()
-from models.flat_assessment import FlatAutismAssessment
 
 
 # Create PydanticAI agent lazily to avoid hard dependency at import time
 autism_agent = None
 
 
-async def analyze(conversation_data: Dict[str, Any], hume_data: Dict[str, Any]) -> FlatAutismAssessment:
+async def analyze(
+    conversation_data: Dict[str, Any], hume_data: Dict[str, Any]
+) -> FlatAutismAssessment:
     """
     Analyzes multi-modal data using PydanticAI with built-in retry handling.
     """
@@ -31,13 +33,15 @@ async def analyze(conversation_data: Dict[str, Any], hume_data: Dict[str, Any]) 
 
     # Build comprehensive analysis prompt
     # Extract transcript data for focused analysis
-    transcript_messages = conversation_data.get('transcript_messages', [])
+    transcript_messages = conversation_data.get("transcript_messages", [])
     transcript_text = ""
     if transcript_messages:
-        transcript_text = "\n".join([
-            f"[{msg.get('role', 'unknown')}]: {msg.get('speech', '')}" 
-            for msg in transcript_messages
-        ])
+        transcript_text = "\n".join(
+            [
+                f"[{msg.get('role', 'unknown')}]: {msg.get('speech', '')}"
+                for msg in transcript_messages
+            ]
+        )
 
     analysis_prompt = f"""
     AUTISM SPECTRUM ASSESSMENT REQUEST
@@ -106,7 +110,7 @@ async def analyze(conversation_data: Dict[str, Any], hume_data: Dict[str, Any]) 
         try:
             # Note: GEMINI_API_KEY is picked up from env by newer pydantic_ai
             autism_agent = Agent(
-                'gemini-2.5-pro',  # Use model string instead of GoogleModel class
+                "gemini-2.5-pro",  # Use model string instead of GoogleModel class
                 result_type=FlatAutismAssessment,
                 retries=3,
                 system_prompt="""You are an expert autism assessment specialist with deep knowledge of DSM-5 criteria, 
@@ -129,7 +133,7 @@ async def analyze(conversation_data: Dict[str, Any], hume_data: Dict[str, Any]) 
 
     if autism_agent is None:
         # pydantic_ai not available; return fallback to keep API responsive
-        if '_PYDANTIC_AI_IMPORT_ERROR' in globals():
+        if "_PYDANTIC_AI_IMPORT_ERROR" in globals():
             print(f"❌ pydantic_ai unavailable: {_PYDANTIC_AI_IMPORT_ERROR}")
         print("🔄 Returning fallback assessment response.")
         return _create_mock_response()
@@ -137,7 +141,9 @@ async def analyze(conversation_data: Dict[str, Any], hume_data: Dict[str, Any]) 
     try:
         print("🤖 Running PydanticAI agent with built-in retries...")
         result = await autism_agent.run(analysis_prompt)
-        assessment = result.data  # Changed from result.output to result.data for newer API
+        assessment = (
+            result.data
+        )  # Changed from result.output to result.data for newer API
         print("✅ Analysis successful")
         print(f"📈 Assessment confidence: {assessment.assessment_confidence:.3f}")
         print(f"🎯 Autism likelihood: {assessment.overall_autism_likelihood:.3f}")
@@ -147,36 +153,32 @@ async def analyze(conversation_data: Dict[str, Any], hume_data: Dict[str, Any]) 
         print(f"❌ PydanticAI analysis failed after retries: {e}")
         print("🔄 Generating fallback assessment...")
         return _create_mock_response()
-    
+
+
 def _create_mock_response() -> FlatAutismAssessment:
     """Fallback mock response if API fails"""
     import random
+
     return FlatAutismAssessment(
         session_id=f"fallback_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
         timestamp=datetime.now().isoformat(),
         analysis_version="1.0",
-        
         overall_autism_likelihood=random.uniform(0.4, 0.8),
         assessment_confidence=random.uniform(0.6, 0.8),
-        
         social_communication_score=random.uniform(0.3, 0.7),
         repetitive_behaviors_score=random.uniform(0.2, 0.6),
         sensory_processing_score=random.uniform(0.4, 0.8),
-        
         eye_contact_score=random.uniform(0.2, 0.6),
         facial_expression_score=random.uniform(0.3, 0.7),
         prosody_score=random.uniform(0.4, 0.8),
         vocal_characteristics_score=random.uniform(0.3, 0.7),
-        
         social_communication_deficits=random.uniform(0.4, 0.7),
         restricted_repetitive_behaviors=random.uniform(0.3, 0.6),
         functional_impairment=random.uniform(0.3, 0.6),
-        
         support_level="level_1",
         evaluation_priority="moderate",
-        
         primary_concerns="Limited data available - automated fallback response",
         observed_strengths="Unable to assess due to technical limitations",
         key_recommendations="Seek professional clinical assessment",
-        assessment_limitations="This is a fallback response due to API failure"
+        assessment_limitations="This is a fallback response due to API failure",
     )

@@ -2,11 +2,11 @@ import sys
 import pathlib
 import types
 import asyncio
-import pytest
 
 sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 
 pydantic_ai_stub = types.ModuleType("pydantic_ai")
+
 
 class DummyAgent:
     def __init__(self, *args, **kwargs):
@@ -15,11 +15,12 @@ class DummyAgent:
     async def run(self, prompt):
         raise NotImplementedError
 
+
 pydantic_ai_stub.Agent = DummyAgent
 sys.modules.setdefault("pydantic_ai", pydantic_ai_stub)
 
-from agents import analyzer
-from models.assessment import AutismAssessmentResponse
+from agents import analyzer  # noqa: E402
+from models.assessment import AutismAssessmentResponse  # noqa: E402
 
 
 def test_create_mock_response_structure():
