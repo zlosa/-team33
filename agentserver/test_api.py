@@ -5,6 +5,7 @@ import json
 from datetime import datetime
 import pytest
 
+
 @pytest.mark.skip(reason="requires running server")
 def test_health_endpoint():
     """Test the health endpoint"""
@@ -20,6 +21,7 @@ def test_health_endpoint():
     except Exception as e:
         print(f"❌ Health check failed: {e}")
         return False
+
 
 @pytest.mark.skip(reason="requires running server")
 def test_analyze_endpoint():

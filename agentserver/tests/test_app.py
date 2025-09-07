@@ -7,12 +7,14 @@ sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 
 pydantic_ai_stub = types.ModuleType("pydantic_ai")
 
+
 class DummyAgent:
     def __init__(self, *args, **kwargs):
         pass
 
     async def run(self, prompt):
         raise NotImplementedError
+
 
 pydantic_ai_stub.Agent = DummyAgent
 sys.modules.setdefault("pydantic_ai", pydantic_ai_stub)
