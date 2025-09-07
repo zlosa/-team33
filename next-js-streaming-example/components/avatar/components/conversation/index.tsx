@@ -20,6 +20,7 @@ export interface IConversation {
 type ConversationProps = {
 	conversationUrl: string;
 	onLeave: () => void;
+	onTranscriptUpdate?: (messages: TranscriptMessage[]) => void;
 };
 
 const AvatarVideo = React.memo(() => {
@@ -55,7 +56,7 @@ const AvatarVideo = React.memo(() => {
 
 // UserVideo component removed - using existing FaceWidgets instead
 
-export const Conversation = React.memo(({ onLeave, conversationUrl }: ConversationProps) => {
+export const Conversation = React.memo(({ onLeave, conversationUrl, onTranscriptUpdate }: ConversationProps) => {
 	const { joinCall, leaveCall } = useCVICall();
 	const meetingState = useMeetingState();
 	const { hasMicError } = useDevices();
@@ -93,7 +94,13 @@ export const Conversation = React.memo(({ onLeave, conversationUrl }: Conversati
 					};
 					
 					// Store transcript data for backend analysis (not displayed in UI)
-					setTranscriptMessages(prev => [...prev, newMessage]);
+					setTranscriptMessages(prev => {
+						const updated = [...prev, newMessage];
+						if (onTranscriptUpdate) {
+							onTranscriptUpdate(updated);
+						}
+						return updated;
+					});
 				}
 			}
 		};

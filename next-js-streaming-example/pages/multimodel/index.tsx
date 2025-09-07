@@ -7,6 +7,7 @@ import type { Emotion } from "../../lib/data/emotion";
 import type { AudioPrediction } from "../../lib/data/audioPrediction";
 import { CVIProvider, Conversation, createConversation, endConversation, useRequestPermissions, WelcomeScreen } from "../../components/avatar";
 import type { IConversation } from "../../components/avatar";
+import type { TranscriptMessage } from "../../components/avatar/components/transcript";
 
 // Data accumulation types
 type AccumulatedData = {
@@ -15,6 +16,7 @@ type AccumulatedData = {
   faceEmotions: Array<{ timestamp: number; emotions: Emotion[]; confidence: number }>;
   prosodyTimeline: AudioPrediction[];
   burstTimeline: AudioPrediction[];
+  transcriptMessages: TranscriptMessage[];
 };
 
 type AnalysisResult = {
@@ -28,16 +30,18 @@ type AnalysisResult = {
 };
 
 // Avatar conversation management using exact original pattern
-function AvatarSection({ onConversationStart, onConversationEnd }: { 
+function AvatarSection({ onConversationStart, onConversationEnd, onTranscriptUpdate }: { 
   onConversationStart: () => void; 
-  onConversationEnd: () => void; 
+  onConversationEnd: () => void;
+  onTranscriptUpdate?: (messages: TranscriptMessage[]) => void;
 }) {
   return (
     <div className="w-full bg-white border border-neutral-200 rounded-lg overflow-hidden">
       <CVIProvider>
         <AvatarSectionInner 
           onConversationStart={onConversationStart} 
-          onConversationEnd={onConversationEnd} 
+          onConversationEnd={onConversationEnd}
+          onTranscriptUpdate={onTranscriptUpdate}
         />
       </CVIProvider>
     </div>
@@ -45,9 +49,10 @@ function AvatarSection({ onConversationStart, onConversationEnd }: {
 }
 
 // Inner component that has access to Daily context
-function AvatarSectionInner({ onConversationStart, onConversationEnd }: { 
+function AvatarSectionInner({ onConversationStart, onConversationEnd, onTranscriptUpdate }: { 
   onConversationStart: () => void; 
-  onConversationEnd: () => void; 
+  onConversationEnd: () => void;
+  onTranscriptUpdate?: (messages: TranscriptMessage[]) => void;
 }) {
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [screen, setScreen] = useState<'welcome' | 'call'>('welcome');
@@ -120,7 +125,11 @@ function AvatarSectionInner({ onConversationStart, onConversationEnd }: {
       )}
       {screen === 'call' && conversation && (
         <div className="h-96">
-          <Conversation conversationUrl={conversation.conversation_url} onLeave={handleEnd} />
+          <Conversation 
+            conversationUrl={conversation.conversation_url} 
+            onLeave={handleEnd}
+            onTranscriptUpdate={onTranscriptUpdate}
+          />
         </div>
       )}
     </>
@@ -134,6 +143,7 @@ export default function MultiModelPage() {
     faceEmotions: [],
     prosodyTimeline: [],
     burstTimeline: [],
+    transcriptMessages: [],
   });
 
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
@@ -144,7 +154,8 @@ export default function MultiModelPage() {
   const hasData =
     accumulatedData.faceEmotions.length > 0 ||
     accumulatedData.prosodyTimeline.length > 0 ||
-    accumulatedData.burstTimeline.length > 0;
+    accumulatedData.burstTimeline.length > 0 ||
+    accumulatedData.transcriptMessages.length > 0;
 
   // Button styles
   const btnBase =
@@ -163,6 +174,7 @@ export default function MultiModelPage() {
       faceEmotions: [],
       prosodyTimeline: [],
       burstTimeline: [],
+      transcriptMessages: [],
     });
     setSessionActive(true);
   };
@@ -216,6 +228,15 @@ export default function MultiModelPage() {
     setAvatarActive(false);
   };
 
+  // Callback for transcript data updates
+  const handleTranscriptUpdate = (messages: TranscriptMessage[]) => {
+    if (!sessionActive) return;
+    setAccumulatedData(prev => ({
+      ...prev,
+      transcriptMessages: messages
+    }));
+  };
+
   // Send data to agent server for analysis
   const handleAnalysis = async () => {
     setIsAnalyzing(true);
@@ -229,9 +250,10 @@ export default function MultiModelPage() {
           start_time: new Date(accumulatedData.startTime).toISOString(),
           end_time: new Date().toISOString(),
           metadata: {
-            total_datapoints: accumulatedData.faceEmotions.length + accumulatedData.prosodyTimeline.length + accumulatedData.burstTimeline.length,
+            total_datapoints: accumulatedData.faceEmotions.length + accumulatedData.prosodyTimeline.length + accumulatedData.burstTimeline.length + accumulatedData.transcriptMessages.length,
             session_type: "multimodal_assessment"
-          }
+          },
+          transcript_messages: accumulatedData.transcriptMessages
         },
         hume_data: {
           session_id: accumulatedData.sessionId,
@@ -286,7 +308,8 @@ export default function MultiModelPage() {
             <div className="text-xs text-gray-500 mt-1">
               Face: {accumulatedData.faceEmotions.length} • 
               Prosody: {accumulatedData.prosodyTimeline.length} • 
-              Burst: {accumulatedData.burstTimeline.length} data points
+              Burst: {accumulatedData.burstTimeline.length} • 
+              Transcript: {accumulatedData.transcriptMessages.length} data points
               {avatarActive && ' • Avatar: Active'}
             </div>
           </div>
@@ -317,6 +340,7 @@ export default function MultiModelPage() {
             <AvatarSection 
               onConversationStart={handleAvatarStart}
               onConversationEnd={handleAvatarEnd}
+              onTranscriptUpdate={handleTranscriptUpdate}
             />
           </div>
         </div>

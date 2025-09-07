@@ -30,13 +30,25 @@ async def analyze(conversation_data: Dict[str, Any], hume_data: Dict[str, Any]) 
     )
 
     # Build comprehensive analysis prompt
+    # Extract transcript data for focused analysis
+    transcript_messages = conversation_data.get('transcript_messages', [])
+    transcript_text = ""
+    if transcript_messages:
+        transcript_text = "\n".join([
+            f"[{msg.get('role', 'unknown')}]: {msg.get('speech', '')}" 
+            for msg in transcript_messages
+        ])
+
     analysis_prompt = f"""
     AUTISM SPECTRUM ASSESSMENT REQUEST
     
     Session ID: {session_id}
     Analysis Timestamp: {datetime.now().isoformat()}
     
-    CONVERSATION DATA:
+    CONVERSATION TRANSCRIPT:
+    {transcript_text if transcript_text else "No transcript data available"}
+    
+    CONVERSATION METADATA:
     {conversation_data}
     
     MULTI-MODAL BEHAVIORAL DATA:
@@ -45,11 +57,13 @@ async def analyze(conversation_data: Dict[str, Any], hume_data: Dict[str, Any]) 
     ASSESSMENT REQUIREMENTS:
     Provide a comprehensive autism spectrum disorder assessment based on DSM-5 criteria, including:
     
-    1. SOCIAL COMMUNICATION ANALYSIS:
+    1. CONVERSATION & SOCIAL COMMUNICATION ANALYSIS:
+       - Analyze the provided conversation transcript for autism-related patterns
        - Turn-taking patterns and conversational flow
-       - Eye contact indicators from facial data  
        - Pragmatic language use and contextual appropriateness
-       - Social reciprocity markers
+       - Social reciprocity markers in conversation exchanges
+       - Response patterns to avatar vs human interaction
+       - Eye contact indicators from facial data
     
     2. BEHAVIORAL PATTERN ASSESSMENT:
        - Repetitive behaviors from video analysis
