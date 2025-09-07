@@ -315,18 +315,18 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-6 pt-10 pb-20 sm:px-10 md:px-14">
-      <div className="text-center mb-12">
-        <div className="pb-4 text-4xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-teal-600 dark:from-indigo-400 dark:via-purple-400 dark:to-teal-400 bg-clip-text text-transparent animate-pulse">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4 pt-6 pb-16 sm:px-6 md:px-8">
+      <div className="text-center mb-6">
+        <div className="pb-2 text-3xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-teal-600 dark:from-indigo-400 dark:via-purple-400 dark:to-teal-400 bg-clip-text text-transparent animate-pulse">
           🧠 AI Agent-Based Multi-Modal Analysis
         </div>
-        <div className="pb-6 text-lg text-gray-700 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
+        <div className="pb-4 text-base text-gray-700 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
           🚀 Interactive AI Agent conversation with real-time multimodal analysis. Combines AI Agent video chat with facial expressions, speech prosody, and vocal burst detection for comprehensive autism assessment.
         </div>
       </div>
 
       {/* Session Status - Backend Data Collection */}
-      <div className="mb-8 p-6 bg-gradient-to-r from-white/80 to-gray-50/80 dark:from-gray-800/80 dark:to-gray-700/80 backdrop-blur-md border border-white/30 dark:border-gray-600/30 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+      <div className="mb-4 p-4 bg-gradient-to-r from-white/80 to-gray-50/80 dark:from-gray-800/80 dark:to-gray-700/80 backdrop-blur-md border border-white/30 dark:border-gray-600/30 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
         <div className="flex justify-between items-center">
           <div>
             <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
@@ -353,21 +353,21 @@ export default function HomePage() {
       </div>
       
       {sessionActive && (
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-8 mb-8">
+      <div className="grid grid-cols-1 xl:grid-cols-4 lg:grid-cols-2 gap-4 mb-6">
         {/* Position 1: Facial Expression Section */}
-        <div className="group bg-gradient-to-br from-pink-50/90 to-rose-100/90 dark:from-pink-900/40 dark:to-rose-800/40 backdrop-blur-sm border border-white/30 dark:border-pink-700/30 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
-          <h2 className="text-xl font-bold text-transparent bg-gradient-to-r from-pink-600 to-rose-600 dark:from-pink-400 dark:to-rose-400 bg-clip-text mb-4 flex items-center gap-2">
+        <div className="group bg-gradient-to-br from-pink-50/90 to-rose-100/90 dark:from-pink-900/40 dark:to-rose-800/40 backdrop-blur-sm border border-white/30 dark:border-pink-700/30 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
+          <h2 className="text-lg font-bold text-transparent bg-gradient-to-r from-pink-600 to-rose-600 dark:from-pink-400 dark:to-rose-400 bg-clip-text mb-3 flex items-center gap-2">
             😊 Facial Expression Analysis
           </h2>
           <FaceWidgets onEmotionUpdate={handleFaceEmotions} />
         </div>
 
         {/* Position 2: AI Agent Conversation Section */}
-        <div className="group bg-gradient-to-br from-blue-50/90 to-indigo-100/90 dark:from-blue-900/40 dark:to-indigo-800/40 backdrop-blur-sm border border-white/30 dark:border-blue-700/30 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
-          <h2 className="text-xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text mb-4 flex items-center gap-2">
+        <div className="group bg-gradient-to-br from-blue-50/90 to-indigo-100/90 dark:from-blue-900/40 dark:to-indigo-800/40 backdrop-blur-sm border border-white/30 dark:border-blue-700/30 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
+          <h2 className="text-lg font-bold text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text mb-3 flex items-center gap-2">
             🤖 AI Agent Conversation
           </h2>
-          <div className="h-96">
+          <div className="h-64">
             <AIAgentSection 
               onConversationStart={handleAvatarStart}
               onConversationEnd={handleAvatarEnd}
@@ -378,16 +378,16 @@ export default function HomePage() {
         </div>
 
         {/* Position 3: Speech Prosody Section */}
-        <div className="group bg-gradient-to-br from-emerald-50/90 to-teal-100/90 dark:from-emerald-900/40 dark:to-teal-800/40 backdrop-blur-sm border border-white/30 dark:border-emerald-700/30 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
-          <h2 className="text-xl font-bold text-transparent bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 bg-clip-text mb-4 flex items-center gap-2">
+        <div className="group bg-gradient-to-br from-emerald-50/90 to-teal-100/90 dark:from-emerald-900/40 dark:to-teal-800/40 backdrop-blur-sm border border-white/30 dark:border-emerald-700/30 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
+          <h2 className="text-lg font-bold text-transparent bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 bg-clip-text mb-3 flex items-center gap-2">
             🎵 Speech Prosody Analysis
           </h2>
           <ProsodyWidgets onTimelineUpdate={handleProsodyData} />
         </div>
 
         {/* Position 4: Vocal Burst Section */}
-        <div className="group bg-gradient-to-br from-amber-50/90 to-yellow-100/90 dark:from-amber-900/40 dark:to-yellow-800/40 backdrop-blur-sm border border-white/30 dark:border-amber-700/30 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
-          <h2 className="text-xl font-bold text-transparent bg-gradient-to-r from-amber-600 to-yellow-600 dark:from-amber-400 dark:to-yellow-400 bg-clip-text mb-4 flex items-center gap-2">
+        <div className="group bg-gradient-to-br from-amber-50/90 to-yellow-100/90 dark:from-amber-900/40 dark:to-yellow-800/40 backdrop-blur-sm border border-white/30 dark:border-amber-700/30 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
+          <h2 className="text-lg font-bold text-transparent bg-gradient-to-r from-amber-600 to-yellow-600 dark:from-amber-400 dark:to-yellow-400 bg-clip-text mb-3 flex items-center gap-2">
             🎤 Vocal Burst Analysis
           </h2>
           <BurstWidgets onTimeline={handleBurstData} />
@@ -396,7 +396,7 @@ export default function HomePage() {
       )}
 
       {/* Analysis Controls */}
-      <div className="mt-8 text-center">
+      <div className="mt-6 text-center">
         {!sessionActive && !hasData && (
           <>
             <button

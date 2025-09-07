@@ -238,22 +238,15 @@ export function FaceWidgets({ onCalibrate, onEmotionUpdate }: FaceWidgetsProps) 
   return (
     <div>
       <FaceTrackedVideo
-        className="mb-4"
+        className="mb-2"
         onVideoReady={onVideoReady}
         trackedFaces={trackedFaces}
-        width={500}
-        height={375}
+        width={300}
+        height={225}
       />
       {!onCalibrate && (
         <div>
-          <TopEmotions emotions={emotions} />
-          <LoaderSet
-            className="mt-4"
-            emotionNames={loaderNames}
-            emotions={emotions}
-            numLevels={numLoaderLevels}
-          />
-          <Descriptor className="mt-4" emotions={emotions} />
+          <TopEmotions emotions={emotions} numEmotions={5} />
         </div>
       )}
 
