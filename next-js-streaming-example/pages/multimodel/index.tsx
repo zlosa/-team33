@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { FaceWidgets } from "../../components/widgets/FaceWidgets";
 import { ProsodyWidgets } from "../../components/widgets/ProsodyWidgets";
 import { BurstWidgets } from "../../components/widgets/BurstWidgets";
+import AssessmentDetails from "../../components/AssessmentDetails";
 import { Emotion } from "../../lib/data/emotion";
 import { AudioPrediction } from "../../lib/data/audioPrediction";
 
@@ -327,9 +328,9 @@ export default function MultiModelPage() {
             <summary className="cursor-pointer font-medium text-gray-700 hover:text-gray-900">
               View Full Assessment Details
             </summary>
-            <pre className="mt-4 text-xs text-gray-600 overflow-auto max-h-96 bg-white p-3 rounded border">
-              {JSON.stringify(analysisResult, null, 2)}
-            </pre>
+            <div className="mt-4">
+              <AssessmentDetails data={analysisResult} />
+            </div>
           </details>
         </div>
       )}
