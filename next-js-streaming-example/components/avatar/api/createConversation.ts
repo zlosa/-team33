@@ -16,7 +16,7 @@ export const createConversation = async (
         'x-api-key': apiKey,
       },
       body: JSON.stringify({
-        persona_id: 'p669f8ddab0a', // Updated User Persona
+        persona_id: 'pf6e1f23fcd9', // Updated User Persona
       }),
     });
 

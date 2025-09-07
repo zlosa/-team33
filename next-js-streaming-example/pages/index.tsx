@@ -51,21 +51,28 @@ function AIAgentSection({ onConversationStart, onConversationEnd, onTranscriptUp
 }
 
 // Inner component that has access to Daily context
-function AIAgentSectionInner({ onConversationStart, onConversationEnd, onTranscriptUpdate, shouldStart }: { 
+function AIAgentSectionInner({ onConversationStart, onConversationEnd, shouldStart }: { 
   onConversationStart: () => void; 
   onConversationEnd: () => void;
-  onTranscriptUpdate?: (messages: TranscriptMessage[]) => void;
   shouldStart?: boolean;
 }) {
   const [apiKey] = useState<string | null>(process.env.NEXT_PUBLIC_TAVUS_API_KEY || null);
   const [screen, setScreen] = useState<'ready' | 'call'>('ready');
   const [conversation, setConversation] = useState<IConversation | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isCreatingConversation, setIsCreatingConversation] = useState(false);
 
   const requestPermissions = useRequestPermissions();
 
   const handleJoin = useCallback(async (token: string) => {
+    // Prevent multiple conversation creation attempts
+    if (isCreatingConversation || conversation) {
+      console.log('Already creating conversation or conversation exists, skipping...');
+      return;
+    }
+    
     try {
+      setIsCreatingConversation(true);
       setLoading(true);
       await requestPermissions();
       if (!token) {
@@ -73,9 +80,9 @@ function AIAgentSectionInner({ onConversationStart, onConversationEnd, onTranscr
         return;
       }
       console.log('Creating conversation with token:', token);
-      const conversation = await createConversation(token);
-      console.log('Conversation created successfully:', conversation);
-      setConversation(conversation);
+      const newConversation = await createConversation(token);
+      console.log('Conversation created successfully:', newConversation);
+      setConversation(newConversation);
       setScreen('call');
       onConversationStart();
     } catch (error) {
@@ -93,32 +100,38 @@ function AIAgentSectionInner({ onConversationStart, onConversationEnd, onTranscr
       }
     } finally {
       setLoading(false);
+      setIsCreatingConversation(false);
     }
-  }, [requestPermissions, onConversationStart]);
+  }, [requestPermissions, onConversationStart, isCreatingConversation, conversation]);
 
-  const handleEnd = async () => {
+  const handleEnd = useCallback(async () => {
     try {
       setScreen('ready');
       if (!conversation || !apiKey) return;
+      console.log('Ending conversation:', conversation.conversation_id);
       await endConversation(conversation.conversation_id, apiKey);
       onConversationEnd();
     } catch (error) {
-      console.error(error);
+      console.error('Error ending conversation:', error);
     } finally {
       setConversation(null);
+      setIsCreatingConversation(false);
     }
-  };
+  }, [conversation, apiKey, onConversationEnd]);
 
   // Auto-start avatar when shouldStart is true
   useEffect(() => {
-    if (shouldStart && !conversation && apiKey && screen === 'ready') {
+    if (shouldStart && !conversation && !isCreatingConversation && apiKey && screen === 'ready') {
+      console.log('Auto-starting conversation...');
       handleJoin(apiKey);
     }
-  }, [shouldStart, conversation, apiKey, screen, handleJoin]);
+  }, [shouldStart, conversation, isCreatingConversation, apiKey, screen, handleJoin]);
 
+  // Cleanup effect - ensure conversation is ended on unmount
   useEffect(() => {
     return () => {
       if (conversation && apiKey) {
+        console.log('Component unmounting, ending conversation:', conversation.conversation_id);
         void endConversation(conversation.conversation_id, apiKey);
       }
     };
@@ -149,9 +162,8 @@ function AIAgentSectionInner({ onConversationStart, onConversationEnd, onTranscr
       {screen === 'call' && conversation && (
         <div className="h-96">
           <Conversation 
-            conversationUrl={conversation.conversation_url} 
+            conversationUrl={conversation.conversation_url}
             onLeave={handleEnd}
-            onTranscriptUpdate={onTranscriptUpdate}
           />
         </div>
       )}
