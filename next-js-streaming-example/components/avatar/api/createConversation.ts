@@ -8,7 +8,7 @@ export const createConversation = async (
       throw new Error('API key is required');
     }
     
-    console.log('Making Tavus API request with persona_id: p48fdf065d6b');
+    console.log('Making Tavus API request with persona_id: p82a6be06b3a');
     const response = await fetch('https://tavusapi.com/v2/conversations', {
       method: 'POST',
       headers: {
@@ -16,7 +16,7 @@ export const createConversation = async (
         'x-api-key': apiKey,
       },
       body: JSON.stringify({
-        persona_id: 'p48fdf065d6b', // Stock Demo Persona
+        persona_id: 'p82a6be06b3a', // Updated User Persona
       }),
     });
 
