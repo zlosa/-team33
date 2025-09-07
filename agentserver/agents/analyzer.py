@@ -4,10 +4,8 @@ from typing import Dict, Any
 from dotenv import load_dotenv
 try:
     from pydantic_ai import Agent  # type: ignore
-    from pydantic_ai.models.google import GoogleModel  # type: ignore
 except Exception as _e:  # noqa: N816
     Agent = None  # type: ignore
-    GoogleModel = None  # type: ignore
     _PYDANTIC_AI_IMPORT_ERROR = _e
 
 # Load environment variables
@@ -90,13 +88,13 @@ async def analyze(conversation_data: Dict[str, Any], hume_data: Dict[str, Any]) 
 
     # Initialize agent lazily if available
     global autism_agent
-    if autism_agent is None and Agent is not None and GoogleModel is not None:
+    if autism_agent is None and Agent is not None:
         try:
-            # Note: GOOGLE_API_KEY is picked up from env by GoogleModel
+            # Note: GEMINI_API_KEY is picked up from env by newer pydantic_ai
             autism_agent = Agent(
-                GoogleModel('gemini-2.5-pro'),
-                output_type=FlatAutismAssessment,
-                output_retries=3,
+                'gemini-2.5-pro',  # Use model string instead of GoogleModel class
+                result_type=FlatAutismAssessment,
+                retries=3,
                 system_prompt="""You are an expert autism assessment specialist with deep knowledge of DSM-5 criteria, 
                 developmental psychology, and behavioral analysis. Your role is to analyze multi-modal data (facial expressions, 
                 speech patterns, behavioral markers) and provide comprehensive autism spectrum disorder assessments.
@@ -125,7 +123,7 @@ async def analyze(conversation_data: Dict[str, Any], hume_data: Dict[str, Any]) 
     try:
         print("🤖 Running PydanticAI agent with built-in retries...")
         result = await autism_agent.run(analysis_prompt)
-        assessment = result.output
+        assessment = result.data  # Changed from result.output to result.data for newer API
         print("✅ Analysis successful")
         print(f"📈 Assessment confidence: {assessment.assessment_confidence:.3f}")
         print(f"🎯 Autism likelihood: {assessment.overall_autism_likelihood:.3f}")
