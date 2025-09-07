@@ -103,14 +103,21 @@ export default function SessionPage() {
               Duration: <span className="font-mono" data-testid="text-session-duration">{formatTime(sessionDuration)}</span>
             </div>
           </div>
-          <Button 
-            variant="destructive"
-            onClick={handleEndSession}
-            disabled={endSessionMutation.isPending}
-            data-testid="button-end-session"
-          >
-            {endSessionMutation.isPending ? "Ending..." : "End Session"}
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button asChild variant="secondary">
+              <a href="http://localhost:3001/multimodel" target="_blank" rel="noreferrer" data-testid="button-open-multimodal">
+                Open Multimodal Analyzer ↗
+              </a>
+            </Button>
+            <Button 
+              variant="destructive"
+              onClick={handleEndSession}
+              disabled={endSessionMutation.isPending}
+              data-testid="button-end-session"
+            >
+              {endSessionMutation.isPending ? "Ending..." : "End Session"}
+            </Button>
+          </div>
         </div>
       </div>
 

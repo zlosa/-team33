@@ -73,10 +73,12 @@ export class MemStorage implements IStorage {
 
   async createSurvey(insertSurvey: InsertSurvey): Promise<Survey> {
     const id = randomUUID();
-    const survey: Survey = { 
-      ...insertSurvey, 
-      id, 
-      createdAt: new Date() 
+    const survey: Survey = {
+      id,
+      participantType: insertSurvey.participantType,
+      sessionGoal: insertSurvey.sessionGoal,
+      concerns: insertSurvey.concerns ?? null,
+      createdAt: new Date(),
     };
     this.surveys.set(id, survey);
     return survey;
@@ -88,12 +90,12 @@ export class MemStorage implements IStorage {
 
   async createSession(insertSession: InsertSession): Promise<Session> {
     const id = randomUUID();
-    const session: Session = { 
-      ...insertSession, 
-      id, 
+    const session: Session = {
+      id,
+      surveyId: insertSession.surveyId ?? null,
       startedAt: new Date(),
       endedAt: null,
-      status: "active"
+      status: "active",
     };
     this.sessions.set(id, session);
     return session;
@@ -126,9 +128,13 @@ export class MemStorage implements IStorage {
   async createVoiceAnalysis(insertAnalysis: InsertVoiceAnalysis): Promise<VoiceAnalysis> {
     const id = randomUUID();
     const analysis: VoiceAnalysis = {
-      ...insertAnalysis,
       id,
-      timestamp: new Date()
+      sessionId: insertAnalysis.sessionId,
+      emotionalState: insertAnalysis.emotionalState ?? null,
+      speechPatterns: insertAnalysis.speechPatterns ?? null,
+      confidence: insertAnalysis.confidence ?? null,
+      timestamp: new Date(),
+      rawData: insertAnalysis.rawData,
     };
     this.voiceAnalysis.set(id, analysis);
     return analysis;
@@ -143,9 +149,13 @@ export class MemStorage implements IStorage {
   async createFacialAnalysis(insertAnalysis: InsertFacialAnalysis): Promise<FacialAnalysis> {
     const id = randomUUID();
     const analysis: FacialAnalysis = {
-      ...insertAnalysis,
       id,
-      timestamp: new Date()
+      sessionId: insertAnalysis.sessionId,
+      expression: insertAnalysis.expression ?? null,
+      engagement: insertAnalysis.engagement ?? null,
+      confidence: insertAnalysis.confidence ?? null,
+      timestamp: new Date(),
+      rawData: insertAnalysis.rawData,
     };
     this.facialAnalysis.set(id, analysis);
     return analysis;
@@ -160,9 +170,12 @@ export class MemStorage implements IStorage {
   async createSessionInsights(insertInsights: InsertSessionInsights): Promise<SessionInsights> {
     const id = randomUUID();
     const insights: SessionInsights = {
-      ...insertInsights,
       id,
-      timestamp: new Date()
+      sessionId: insertInsights.sessionId,
+      communicationScore: insertInsights.communicationScore ?? null,
+      comfortLevel: insertInsights.comfortLevel ?? null,
+      recommendations: insertInsights.recommendations,
+      timestamp: new Date(),
     };
     this.sessionInsights.set(id, insights);
     return insights;

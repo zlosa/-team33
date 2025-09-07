@@ -15,17 +15,17 @@ export default function AnalysisDashboard({ sessionId }: AnalysisDashboardProps)
   const queryClient = useQueryClient();
 
   // Fetch session insights
-  const { data: insights = [] } = useQuery({
+  const { data: insights = [] } = useQuery<SessionInsights[]>({
     queryKey: ["/api/session-insights", sessionId],
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
   // Fetch voice and facial analyses for generating insights
-  const { data: voiceAnalyses = [] } = useQuery({
+  const { data: voiceAnalyses = [] } = useQuery<VoiceAnalysis[]>({
     queryKey: ["/api/voice-analysis/session", sessionId],
   });
 
-  const { data: facialAnalyses = [] } = useQuery({
+  const { data: facialAnalyses = [] } = useQuery<FacialAnalysis[]>({
     queryKey: ["/api/facial-analysis/session", sessionId],
   });
 
@@ -110,8 +110,8 @@ export default function AnalysisDashboard({ sessionId }: AnalysisDashboardProps)
                   {latestInsights.communicationScore}
                 </div>
                 <p className="text-sm text-muted-foreground">Out of 10</p>
-                <Progress 
-                  value={latestInsights.communicationScore * 10} 
+                <Progress
+                  value={(latestInsights.communicationScore ?? 0) * 10}
                   className="mt-2"
                 />
               </div>

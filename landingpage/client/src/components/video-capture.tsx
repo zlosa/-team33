@@ -22,7 +22,7 @@ export default function VideoCapture({ sessionId }: VideoCaptureProps) {
   const { requestCamera, isSupported, error } = useMediaCapture();
 
   // Fetch existing facial analyses
-  const { data: analyses = [] } = useQuery({
+  const { data: analyses = [] } = useQuery<FacialAnalysis[]>({
     queryKey: ["/api/facial-analysis/session", sessionId],
     refetchInterval: isActive ? 5000 : false,
   });
