@@ -64,9 +64,16 @@ export function AudioWidgets({ modelName, recordingLengthMs, streamWindowLengthM
 
     while (mountRef.current) {
       const blob = await recorderRef.current.record(recordingLengthMs);
-      audioBufferRef.current.push(blob);
-      if (serverReadyRef.current) {
-        sendRequest();
+      console.log(`Recorded audio blob: size=${blob.size}, type=${blob.type}`);
+      
+      // Only add non-empty blobs
+      if (blob.size > 0) {
+        audioBufferRef.current.push(blob);
+        if (serverReadyRef.current) {
+          sendRequest();
+        }
+      } else {
+        console.warn("Skipping empty audio blob");
       }
     }
   }
@@ -160,10 +167,20 @@ export function AudioWidgets({ modelName, recordingLengthMs, streamWindowLengthM
     }
 
     if (socket.readyState === WebSocket.OPEN) {
+      if (audioBufferRef.current.length === 0) {
+        console.log("No audio data in buffer, skipping send");
+        return;
+      }
+
       const firstBlob = audioBufferRef.current[0];
+      const audioType = firstBlob?.type || 'audio/webm';
+      console.log(`Combining ${audioBufferRef.current.length} audio blobs, type: ${audioType}`);
+      
       const combinedBlob = new Blob(audioBufferRef.current, { 
-        type: firstBlob?.type || 'audio/webm' 
+        type: audioType 
       });
+      
+      console.log(`Combined blob: size=${combinedBlob.size}, type=${combinedBlob.type}`);
       serverReadyRef.current = false;
       audioBufferRef.current = [];
 

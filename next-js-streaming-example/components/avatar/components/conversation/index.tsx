@@ -10,7 +10,7 @@ import {
 import { useCVICall } from '../../hooks/use-cvi-call';
 import { useReplicaIDs } from '../../hooks/use-replica-ids';
 import { MicSelectBtn, CameraSelectBtn, ScreenShareButton } from '../device-select';
-import Transcript, { type TranscriptMessage } from '../transcript'
+import { type TranscriptMessage } from '../transcript'
 
 export interface IConversation {
   conversation_id: string
@@ -74,6 +74,7 @@ export const Conversation = React.memo(({ onLeave, conversationUrl }: Conversati
 	}, [conversationUrl, joinCall]);
 
 	// Listen for transcript events via Daily app-message
+	// Note: Transcript data is collected in background for backend analysis (UI hidden)
 	useEffect(() => {
 		if (!daily) return;
 
@@ -91,6 +92,7 @@ export const Conversation = React.memo(({ onLeave, conversationUrl }: Conversati
 						timestamp: new Date()
 					};
 					
+					// Store transcript data for backend analysis (not displayed in UI)
 					setTranscriptMessages(prev => [...prev, newMessage]);
 				}
 			}
@@ -116,16 +118,11 @@ export const Conversation = React.memo(({ onLeave, conversationUrl }: Conversati
 				</div>
 			)}
 
-			{/* Main content area - split between avatar and transcript */}
-			<div className="flex-1 flex gap-4">
-				{/* Avatar video - left side */}
-				<div className="flex-1 bg-black rounded-lg overflow-hidden">
+			{/* Main content area - full width avatar only */}
+			<div className="flex-1">
+				{/* Avatar video - full width */}
+				<div className="w-full h-full bg-black rounded-lg overflow-hidden">
 					<AvatarVideo />
-				</div>
-
-				{/* Transcript - right side */}
-				<div className="flex-1 bg-white border border-gray-200 rounded-lg p-4">
-					<Transcript messages={transcriptMessages} />
 				</div>
 			</div>
 
