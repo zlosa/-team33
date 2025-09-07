@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareAI - AI Operating System for Autism Care</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                borderRadius: {
+                    lg: "var(--radius)",
+                    md: "calc(var(--radius) - 2px)",
+                    sm: "calc(var(--radius) - 4px)",
+                },
+                colors: {
+                    background: "var(--background)",
+                    foreground: "var(--foreground)",
+                    card: {
+                        DEFAULT: "var(--card)",
+                        foreground: "var(--card-foreground)",
+                    },
+                    popover: {
+                        DEFAULT: "var(--popover)",
+                        foreground: "var(--popover-foreground)",
+                    },
+                    primary: {
+                        DEFAULT: "var(--primary)",
+                        foreground: "var(--primary-foreground)",
+                    },
+                    secondary: {
+                        DEFAULT: "var(--secondary)",
+                        foreground: "var(--secondary-foreground)",
+                    },
+                    muted: {
+                        DEFAULT: "var(--muted)",
+                        foreground: "var(--muted-foreground)",
+                    },
+                    accent: {
+                        DEFAULT: "var(--accent)",
+                        foreground: "var(--accent-foreground)",
+                    },
+                    destructive: {
+                        DEFAULT: "var(--destructive)",
+                        foreground: "var(--destructive-foreground)",
+                    },
+                    border: "var(--border)",
+                    input: "var(--input)",
+                    ring: "var(--ring)",
+                },
+                fontFamily: {
+                    sans: ["Inter", "system-ui", "sans-serif"],
+                }
+            },
+        }
+    };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/heroicons@2.0.16/24/outline/heroicons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --radius: 8px;
+            --background: hsl(210 40% 98%);
+            --foreground: hsl(222 84% 5%);
+            --card: hsl(0 0% 100%);
+            --card-foreground: hsl(222 84% 5%);
+            --popover: hsl(0 0% 100%);
+            --popover-foreground: hsl(222 84% 5%);
+            --primary: hsl(221 83% 53%);
+            --primary-foreground: hsl(210 40% 98%);
+            --secondary: hsl(168 76% 42%);
+            --secondary-foreground: hsl(0 0% 100%);
+            --muted: hsl(210 40% 96%);
+            --muted-foreground: hsl(215 16% 47%);
+            --accent: hsl(142 76% 36%);
+            --accent-foreground: hsl(0 0% 100%);
+            --destructive: hsl(0 84% 60%);
+            --destructive-foreground: hsl(210 40% 98%);
+            --border: hsl(214 32% 91%);
+            --input: hsl(214 32% 91%);
+            --ring: hsl(221 83% 53%);
+        }
+
+        .dark {
+            --background: hsl(222 84% 5%);
+            --foreground: hsl(210 40% 98%);
+            --card: hsl(222 84% 8%);
+            --card-foreground: hsl(210 40% 98%);
+            --popover: hsl(222 84% 8%);
+            --popover-foreground: hsl(210 40% 98%);
+            --primary: hsl(221 83% 53%);
+            --primary-foreground: hsl(210 40% 98%);
+            --secondary: hsl(168 76% 42%);
+            --secondary-foreground: hsl(0 0% 100%);
+            --muted: hsl(217 33% 17%);
+            --muted-foreground: hsl(215 20% 65%);
+            --accent: hsl(142 76% 36%);
+            --accent-foreground: hsl(0 0% 100%);
+            --destructive: hsl(0 84% 60%);
+            --destructive-foreground: hsl(210 40% 98%);
+            --border: hsl(217 33% 17%);
+            --input: hsl(217 33% 17%);
+            --ring: hsl(221 83% 53%);
+        }
+
+        .pulse-gentle {
+            animation: pulse-gentle 2s infinite;
+        }
+
+        @keyframes pulse-gentle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .recording-pulse {
+            animation: recording-pulse 1.5s infinite;
+        }
+
+        @keyframes recording-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .wave-animation {
+            display: inline-block;
+            height: 20px;
+            margin: 0 2px;
+        }
+
+        .wave-bar {
+            display: inline-block;
+            width: 4px;
+            background: var(--primary);
+            margin: 0 1px;
+            animation: wave 1s infinite ease-in-out;
+        }
+
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes wave {
+            0%, 40%, 100% { transform: scaleY(0.4); }
+            20% { transform: scaleY(1); }
+        }
+    </style>
+</head>
+<body class="font-sans bg-background text-foreground min-h-screen">
+    <!-- Navigation -->
+    <!-- @COMPONENT: Navigation [brand logo, main navigation links] -->
+    <nav class="bg-card border-b border-border sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-primary rounded-lg p-2">
+                        <svg class="w-6 h-6 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold text-foreground">CareAI</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#features" class="text-muted-foreground hover:text-foreground transition-colors">Features</a>
+                    <a href="#how-it-works" class="text-muted-foreground hover:text-foreground transition-colors">How It Works</a>
+                    <a href="#support" class="text-muted-foreground hover:text-foreground transition-colors">Support</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: Navigation -->
+
+    <!-- Hero Section -->
+    <!-- @COMPONENT: HeroSection [main headline, description, CTA buttons] -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 text-foreground leading-tight">
+                AI Operating System for
+                <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Autism Care</span>
+            </h1>
+            <p class="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+                Translating voice and facial signals into understanding. Empowering caregivers and individuals with AI-powered insights for better communication and care.
+            </p>
+            
+            <!-- Call-to-Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <button id="startSessionBtn" class="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 transform hover:scale-105 focus:ring-4 focus:ring-ring focus:outline-none">
+                    Start Session Now
+                </button>
+                <button id="takeSurveyBtn" class="bg-secondary hover:bg-secondary/90 text-secondary-foreground px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 focus:ring-4 focus:ring-ring focus:outline-none">
+                    Take Assessment Survey
+                </button>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: HeroSection -->
+
+    <!-- Features Section -->
+    <!-- @COMPONENT: FeaturesSection [feature cards with icons and descriptions] -->
+    <section id="features" class="py-16 bg-muted/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-foreground mb-4">Intelligent Analysis & Understanding</h2>
+                <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+                    Advanced AI technology designed specifically for autism care, providing real-time insights and support.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Voice Analysis Feature -->
+                <div class="bg-card rounded-xl p-8 border border-border hover:shadow-lg transition-shadow">
+                    <div class="bg-primary/10 rounded-lg p-3 w-12 h-12 mb-6 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-foreground mb-3">Voice Pattern Analysis</h3>
+                    <p class="text-muted-foreground">
+                        Advanced speech processing to identify communication patterns, emotional states, and individual preferences.
+                    </p>
+                </div>
+
+                <!-- Facial Expression Feature -->
+                <div class="bg-card rounded-xl p-8 border border-border hover:shadow-lg transition-shadow">
+                    <div class="bg-secondary/10 rounded-lg p-3 w-12 h-12 mb-6 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-foreground mb-3">Facial Expression Detection</h3>
+                    <p class="text-muted-foreground">
+                        Non-intrusive facial analysis to understand emotions, comfort levels, and communication needs.
+                    </p>
+                </div>
+
+                <!-- Insights Feature -->
+                <div class="bg-card rounded-xl p-8 border border-border hover:shadow-lg transition-shadow">
+                    <div class="bg-accent/10 rounded-lg p-3 w-12 h-12 mb-6 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-foreground mb-3">Actionable Insights</h3>
+                    <p class="text-muted-foreground">
+                        Clear, easy-to-understand reports and recommendations for caregivers and healthcare professionals.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: FeaturesSection -->
+
+    <!-- Main Application Interface (Hidden by default) -->
+    <!-- @COMPONENT: ApplicationInterface [voice capture, video capture, analysis dashboard] -->
+    <div id="appInterface" class="hidden">
+        <!-- Session Header -->
+        <div class="bg-card border-b border-border p-4">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <h2 class="text-2xl font-semibold text-foreground">Care Session</h2>
+                <button id="endSessionBtn" class="bg-destructive hover:bg-destructive/90 text-destructive-foreground px-4 py-2 rounded-lg font-medium transition-colors">
+                    End Session
+                </button>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto p-6">
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Voice Input Section -->
+                <!-- @COMPONENT: VoiceCapture [microphone controls, audio visualization] -->
+                <div class="bg-card rounded-xl border border-border p-6">
+                    <h3 class="text-xl font-semibold mb-4 text-foreground">Voice Analysis</h3>
+                    
+                    <div class="text-center mb-6">
+                        <button id="voiceToggle" class="bg-primary hover:bg-primary/90 text-primary-foreground w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold transition-all duration-200 focus:ring-4 focus:ring-ring">
+                            🎤
+                        </button>
+                        <p class="mt-3 text-sm text-muted-foreground">Click to start voice recording</p>
+                    </div>
+
+                    <!-- Audio Visualization -->
+                    <div id="audioVisualization" class="hidden">
+                        <div class="flex justify-center items-center mb-4">
+                            <div class="wave-animation">
+                                <div class="wave-bar" style="height: 10px;"></div>
+                                <div class="wave-bar" style="height: 15px;"></div>
+                                <div class="wave-bar" style="height: 20px;"></div>
+                                <div class="wave-bar" style="height: 15px;"></div>
+                                <div class="wave-bar" style="height: 8px;"></div>
+                            </div>
+                        </div>
+                        <p class="text-center text-sm text-muted-foreground">Listening and analyzing...</p>
+                    </div>
+
+                    <!-- Voice Analysis Results -->
+                    <div id="voiceResults" class="hidden space-y-4">
+                        <div class="bg-muted rounded-lg p-4">
+                            <h4 class="font-medium text-foreground mb-2">Emotional State</h4>
+                            <div class="flex items-center space-x-2">
+                                <div class="flex-1 bg-background rounded-full h-2">
+                                    <div class="bg-accent h-2 rounded-full" style="width: 75%;"></div>
+                                </div>
+                                <span class="text-sm text-muted-foreground" data-mock="true">Calm</span>
+                            </div>
+                        </div>
+                        <div class="bg-muted rounded-lg p-4">
+                            <h4 class="font-medium text-foreground mb-2">Speech Patterns</h4>
+                            <p class="text-sm text-muted-foreground" data-mock="true">Regular pace, clear articulation</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: VoiceCapture -->
+
+                <!-- Video Input Section -->
+                <!-- @COMPONENT: VideoCapture [camera controls, facial detection overlay] -->
+                <div class="bg-card rounded-xl border border-border p-6">
+                    <h3 class="text-xl font-semibold mb-4 text-foreground">Facial Expression Analysis</h3>
+                    
+                    <div class="relative bg-muted rounded-lg aspect-video mb-4 flex items-center justify-center">
+                        <video id="videoElement" class="w-full h-full rounded-lg object-cover hidden" autoplay muted playsinline></video>
+                        <div id="videoPlaceholder" class="text-center">
+                            <svg class="w-16 h-16 text-muted-foreground mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            <button id="startVideoBtn" class="bg-secondary hover:bg-secondary/90 text-secondary-foreground px-4 py-2 rounded-lg font-medium transition-colors">
+                                Start Camera
+                            </button>
+                        </div>
+                        
+                        <!-- Facial Detection Overlay -->
+                        <div id="faceDetection" class="absolute inset-0 hidden">
+                            <div class="absolute top-4 left-4 bg-primary text-primary-foreground px-2 py-1 rounded text-xs">
+                                Face Detected
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Facial Analysis Results -->
+                    <div id="facialResults" class="hidden space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-muted rounded-lg p-3">
+                                <h5 class="font-medium text-sm text-foreground mb-1">Expression</h5>
+                                <p class="text-lg font-semibold text-primary" data-mock="true">Neutral</p>
+                            </div>
+                            <div class="bg-muted rounded-lg p-3">
+                                <h5 class="font-medium text-sm text-foreground mb-1">Engagement</h5>
+                                <p class="text-lg font-semibold text-secondary" data-mock="true">High</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: VideoCapture -->
+            </div>
+
+            <!-- Analysis Dashboard -->
+            <!-- @COMPONENT: AnalysisDashboard [real-time insights, charts, recommendations] -->
+            <div class="mt-8 bg-card rounded-xl border border-border p-6">
+                <h3 class="text-xl font-semibold mb-6 text-foreground">Real-Time Analysis Dashboard</h3>
+                
+                <div class="grid md:grid-cols-3 gap-6">
+                    <!-- Communication Score -->
+                    <div class="bg-muted rounded-lg p-4 text-center">
+                        <h4 class="font-medium text-foreground mb-2">Communication Score</h4>
+                        <div class="text-3xl font-bold text-primary mb-2" data-mock="true">8.2</div>
+                        <p class="text-sm text-muted-foreground">Out of 10</p>
+                    </div>
+
+                    <!-- Comfort Level -->
+                    <div class="bg-muted rounded-lg p-4 text-center">
+                        <h4 class="font-medium text-foreground mb-2">Comfort Level</h4>
+                        <div class="text-3xl font-bold text-accent mb-2" data-mock="true">High</div>
+                        <p class="text-sm text-muted-foreground">Stable patterns detected</p>
+                    </div>
+
+                    <!-- Session Duration -->
+                    <div class="bg-muted rounded-lg p-4 text-center">
+                        <h4 class="font-medium text-foreground mb-2">Session Duration</h4>
+                        <div class="text-3xl font-bold text-secondary mb-2" id="sessionTimer">00:00</div>
+                        <p class="text-sm text-muted-foreground">Minutes:Seconds</p>
+                    </div>
+                </div>
+
+                <!-- Recommendations -->
+                <div class="mt-6 bg-accent/10 rounded-lg p-4 border border-accent/20">
+                    <h4 class="font-medium text-foreground mb-3">AI Recommendations</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-start space-x-2" data-mock="true">
+                            <span class="text-accent">•</span>
+                            <span class="text-muted-foreground">Continue with current communication approach - showing positive engagement</span>
+                        </li>
+                        <li class="flex items-start space-x-2" data-mock="true">
+                            <span class="text-accent">•</span>
+                            <span class="text-muted-foreground">Consider slower speech pace to improve comprehension</span>
+                        </li>
+                        <li class="flex items-start space-x-2" data-mock="true">
+                            <span class="text-accent">•</span>
+                            <span class="text-muted-foreground">Visual cues are being processed well - maintain eye contact</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: AnalysisDashboard -->
+        </div>
+    </div>
+    <!-- @END_COMPONENT: ApplicationInterface -->
+
+    <!-- Survey Modal -->
+    <!-- @COMPONENT: SurveyModal [assessment questions, form validation] -->
+    <div id="surveyModal" class="hidden fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-card rounded-xl border border-border max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-border">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-semibold text-foreground">Pre-Session Assessment</h2>
+                    <button id="closeSurveyBtn" class="text-muted-foreground hover:text-foreground">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <p class="text-muted-foreground mt-2">Help us personalize your care experience</p>
+            </div>
+            
+            <div class="p-6 space-y-6">
+                <!-- @STATE: currentQuestion:number = 0 -->
+                <!-- Question 1 -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-foreground">1. Who will be participating in this session?</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="participant" value="individual" class="w-4 h-4 text-primary border-border focus:ring-ring">
+                            <span class="text-foreground">Individual with autism</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="participant" value="caregiver" class="w-4 h-4 text-primary border-border focus:ring-ring">
+                            <span class="text-foreground">Caregiver</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="participant" value="both" class="w-4 h-4 text-primary border-border focus:ring-ring">
+                            <span class="text-foreground">Both together</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-foreground">2. What is the primary goal for today's session?</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="goal" value="communication" class="w-4 h-4 text-primary border-border focus:ring-ring">
+                            <span class="text-foreground">Improve communication</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="goal" value="emotional" class="w-4 h-4 text-primary border-border focus:ring-ring">
+                            <span class="text-foreground">Understand emotional state</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="goal" value="assessment" class="w-4 h-4 text-primary border-border focus:ring-ring">
+                            <span class="text-foreground">General assessment</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="goal" value="monitoring" class="w-4 h-4 text-primary border-border focus:ring-ring">
+                            <span class="text-foreground">Progress monitoring</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-foreground">3. Any specific concerns or focus areas?</h3>
+                    <textarea 
+                        placeholder="Optional: Share any specific concerns or areas you'd like to focus on during this session..."
+                        class="w-full p-3 border border-input rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent resize-none"
+                        rows="3"
+                    ></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-4">
+                    <button id="skipSurveyBtn" class="px-6 py-2 text-muted-foreground hover:text-foreground transition-colors">
+                        Skip for now
+                    </button>
+                    <button id="submitSurveyBtn" class="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-lg font-medium transition-colors focus:ring-4 focus:ring-ring">
+                        Start Session
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: SurveyModal -->
+
+    <!-- Loading States -->
+    <!-- @COMPONENT: LoadingIndicator [permission requests, initialization] -->
+    <div id="loadingModal" class="hidden fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div class="bg-card rounded-xl border border-border p-8 max-w-md text-center">
+            <div class="pulse-gentle mb-4">
+                <svg class="w-16 h-16 text-primary mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-foreground mb-2">Initializing CareAI</h3>
+            <p id="loadingMessage" class="text-muted-foreground">Preparing your session...</p>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: LoadingIndicator -->
+
+    <script>
+        // TODO: Implement business logic, API calls, and state management
+        
+        (function() {
+            // Application State
+            let isRecording = false;
+            let isVideoActive = false;
+            let sessionStartTime = null;
+            let sessionTimer = null;
+
+            // DOM Elements
+            const startSessionBtn = document.getElementById('startSessionBtn');
+            const takeSurveyBtn = document.getElementById('takeSurveyBtn');
+            const appInterface = document.getElementById('appInterface');
+            const surveyModal = document.getElementById('surveyModal');
+            const loadingModal = document.getElementById('loadingModal');
+            const loadingMessage = document.getElementById('loadingMessage');
+            
+            // Voice elements
+            const voiceToggle = document.getElementById('voiceToggle');
+            const audioVisualization = document.getElementById('audioVisualization');
+            const voiceResults = document.getElementById('voiceResults');
+            
+            // Video elements
+            const startVideoBtn = document.getElementById('startVideoBtn');
+            const videoElement = document.getElementById('videoElement');
+            const videoPlaceholder = document.getElementById('videoPlaceholder');
+            const faceDetection = document.getElementById('faceDetection');
+            const facialResults = document.getElementById('facialResults');
+            
+            // Session controls
+            const endSessionBtn = document.getElementById('endSessionBtn');
+            const sessionTimerDisplay = document.getElementById('sessionTimer');
+
+            // Event Listeners
+            startSessionBtn.addEventListener('click', startSession);
+            takeSurveyBtn.addEventListener('click', openSurvey);
+            endSessionBtn.addEventListener('click', endSession);
+            
+            // Survey controls
+            document.getElementById('closeSurveyBtn').addEventListener('click', closeSurvey);
+            document.getElementById('skipSurveyBtn').addEventListener('click', () => {
+                closeSurvey();
+                startSession();
+            });
+            document.getElementById('submitSurveyBtn').addEventListener('click', () => {
+                // TODO: Process survey data
+                closeSurvey();
+                startSession();
+            });
+
+            // Voice controls
+            voiceToggle.addEventListener('click', toggleVoiceRecording);
+            
+            // Video controls
+            startVideoBtn.addEventListener('click', startVideoCapture);
+
+            function showLoading(message = 'Loading...') {
+                loadingMessage.textContent = message;
+                loadingModal.classList.remove('hidden');
+            }
+
+            function hideLoading() {
+                loadingModal.classList.add('hidden');
+            }
+
+            function openSurvey() {
+                surveyModal.classList.remove('hidden');
+            }
+
+            function closeSurvey() {
+                surveyModal.classList.add('hidden');
+            }
+
+            async function startSession() {
+                showLoading('Requesting camera and microphone permissions...');
+                
+                try {
+                    // TODO: Request actual media permissions
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    
+                    loadingMessage.textContent = 'Initializing AI models...';
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    
+                    hideLoading();
+                    showAppInterface();
+                    startSessionTimer();
+                } catch (error) {
+                    hideLoading();
+                    alert('Unable to access camera or microphone. Please check permissions and try again.');
+                }
+            }
+
+            function showAppInterface() {
+                // Hide landing page content
+                document.querySelector('section').style.display = 'none';
+                document.getElementById('features').style.display = 'none';
+                
+                // Show app interface
+                appInterface.classList.remove('hidden');
+                appInterface.classList.add('fade-in');
+            }
+
+            function endSession() {
+                if (confirm('Are you sure you want to end this session?')) {
+                    // TODO: Save session data
+                    stopSessionTimer();
+                    resetInterface();
+                    location.reload(); // Simple way to return to landing page
+                }
+            }
+
+            function resetInterface() {
+                isRecording = false;
+                isVideoActive = false;
+                audioVisualization.classList.add('hidden');
+                voiceResults.classList.add('hidden');
+                facialResults.classList.add('hidden');
+                
+                // Reset video
+                if (videoElement.srcObject) {
+                    videoElement.srcObject.getTracks().forEach(track => track.stop());
+                }
+                videoElement.classList.add('hidden');
+                videoPlaceholder.classList.remove('hidden');
+                faceDetection.classList.add('hidden');
+            }
+
+            function startSessionTimer() {
+                sessionStartTime = Date.now();
+                sessionTimer = setInterval(updateSessionTimer, 1000);
+            }
+
+            function stopSessionTimer() {
+                if (sessionTimer) {
+                    clearInterval(sessionTimer);
+                    sessionTimer = null;
+                }
+            }
+
+            function updateSessionTimer() {
+                if (!sessionStartTime) return;
+                
+                const elapsed = Math.floor((Date.now() - sessionStartTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                
+                sessionTimerDisplay.textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+
+            async function toggleVoiceRecording() {
+                if (!isRecording) {
+                    // Start recording
+                    try {
+                        // TODO: Implement actual voice recording
+                        showLoading('Starting voice analysis...');
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        hideLoading();
+                        
+                        isRecording = true;
+                        voiceToggle.classList.add('recording-pulse');
+                        voiceToggle.style.backgroundColor = 'var(--destructive)';
+                        voiceToggle.innerHTML = '⏸️';
+                        
+                        audioVisualization.classList.remove('hidden');
+                        
+                        // Simulate analysis results after 5 seconds
+                        setTimeout(() => {
+                            if (isRecording) {
+                                voiceResults.classList.remove('hidden');
+                            }
+                        }, 5000);
+                        
+                    } catch (error) {
+                        hideLoading();
+                        alert('Unable to start voice recording. Please check microphone permissions.');
+                    }
+                } else {
+                    // Stop recording
+                    isRecording = false;
+                    voiceToggle.classList.remove('recording-pulse');
+                    voiceToggle.style.backgroundColor = 'var(--primary)';
+                    voiceToggle.innerHTML = '🎤';
+                    
+                    audioVisualization.classList.add('hidden');
+                }
+            }
+
+            async function startVideoCapture() {
+                try {
+                    showLoading('Starting camera...');
+                    
+                    // TODO: Implement actual video capture
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    
+                    hideLoading();
+                    
+                    // Simulate video stream
+                    videoPlaceholder.classList.add('hidden');
+                    videoElement.classList.remove('hidden');
+                    
+                    // Simulate face detection after 3 seconds
+                    setTimeout(() => {
+                        faceDetection.classList.remove('hidden');
+                        facialResults.classList.remove('hidden');
+                    }, 3000);
+                    
+                    isVideoActive = true;
+                    
+                } catch (error) {
+                    hideLoading();
+                    alert('Unable to access camera. Please check permissions and try again.');
+                }
+            }
+
+            // Handle page visibility for cleanup
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    // TODO: Pause analysis when page is hidden
+                }
+            });
+
+            // Error handling for media devices
+            window.addEventListener('error', function(e) {
+                console.error('Application error:', e);
+                // TODO: Implement proper error reporting
+            });
+
+        })();
+    </script>
+</body>
+</html>

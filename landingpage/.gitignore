@@ -1,0 +1,37 @@
+# ----------------------
+# Global ignores
+# ----------------------
+
+# Dependencies
+node_modules/
+
+# Build artifacts (for Vite, Next, CRA, etc.)
+dist/
+build/
+.next/
+.out/
+.cache/
+
+# Env files
+.env
+.env.*.local
+
+# macOS Finder junk
+.DS_Store
+
+# Archive files
+*.tar.gz
+*.zip
+
+# ----------------------
+# Landingpage-specific
+# ----------------------
+
+landingpage/node_modules/
+landingpage/dist/
+landingpage/build/
+landingpage/.next/
+landingpage/.out/
+landingpage/.cache/
+landingpage/.env
+landingpage/.env.*.local
