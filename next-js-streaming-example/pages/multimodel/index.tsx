@@ -30,10 +30,11 @@ type AnalysisResult = {
 };
 
 // Avatar conversation management using exact original pattern
-function AvatarSection({ onConversationStart, onConversationEnd, onTranscriptUpdate }: { 
+function AvatarSection({ onConversationStart, onConversationEnd, onTranscriptUpdate, shouldStart }: { 
   onConversationStart: () => void; 
   onConversationEnd: () => void;
   onTranscriptUpdate?: (messages: TranscriptMessage[]) => void;
+  shouldStart?: boolean;
 }) {
   return (
     <div className="w-full bg-white border border-neutral-200 rounded-lg overflow-hidden">
@@ -42,6 +43,7 @@ function AvatarSection({ onConversationStart, onConversationEnd, onTranscriptUpd
           onConversationStart={onConversationStart} 
           onConversationEnd={onConversationEnd}
           onTranscriptUpdate={onTranscriptUpdate}
+          shouldStart={shouldStart}
         />
       </CVIProvider>
     </div>
@@ -49,47 +51,25 @@ function AvatarSection({ onConversationStart, onConversationEnd, onTranscriptUpd
 }
 
 // Inner component that has access to Daily context
-function AvatarSectionInner({ onConversationStart, onConversationEnd, onTranscriptUpdate }: { 
+function AvatarSectionInner({ onConversationStart, onConversationEnd, onTranscriptUpdate, shouldStart }: { 
   onConversationStart: () => void; 
   onConversationEnd: () => void;
   onTranscriptUpdate?: (messages: TranscriptMessage[]) => void;
+  shouldStart?: boolean;
 }) {
-  const [apiKey, setApiKey] = useState<string | null>(null);
-  const [screen, setScreen] = useState<'welcome' | 'call'>('welcome');
+  const [apiKey, setApiKey] = useState<string | null>(process.env.NEXT_PUBLIC_TAVUS_API_KEY || null);
+  const [screen, setScreen] = useState<'ready' | 'call'>('ready');
   const [conversation, setConversation] = useState<IConversation | null>(null);
   const [loading, setLoading] = useState(false);
 
   const requestPermissions = useRequestPermissions();
 
-  useEffect(() => {
-    return () => {
-      if (conversation && apiKey) {
-        void endConversation(conversation.conversation_id, apiKey);
-      }
-    };
-  }, [conversation, apiKey]);
-
-  const handleEnd = async () => {
-    try {
-      setScreen('welcome');
-      if (!conversation || !apiKey) return;
-      await endConversation(conversation.conversation_id, apiKey);
-      onConversationEnd();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setConversation(null);
-    }
-  };
-
   const handleJoin = async (token: string) => {
     try {
-      setApiKey(token);
-      localStorage.setItem('token', token);
       setLoading(true);
       await requestPermissions();
       if (!token) {
-        alert('API key not found. Please set your API key.');
+        alert('Tavus API key not found in environment variables.');
         return;
       }
       console.log('Creating conversation with token:', token);
@@ -116,11 +96,51 @@ function AvatarSectionInner({ onConversationStart, onConversationEnd, onTranscri
     }
   };
 
+  const handleEnd = async () => {
+    try {
+      setScreen('ready');
+      if (!conversation || !apiKey) return;
+      await endConversation(conversation.conversation_id, apiKey);
+      onConversationEnd();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setConversation(null);
+    }
+  };
+
+  // Auto-start avatar when shouldStart is true
+  useEffect(() => {
+    if (shouldStart && !conversation && apiKey && screen === 'ready') {
+      handleJoin(apiKey);
+    }
+  }, [shouldStart, conversation, apiKey, screen]);
+
+  useEffect(() => {
+    return () => {
+      if (conversation && apiKey) {
+        void endConversation(conversation.conversation_id, apiKey);
+      }
+    };
+  }, [conversation, apiKey]);
+
   return (
     <>
-      {screen === 'welcome' && (
-        <div className="h-96">
-          <WelcomeScreen onStart={handleJoin} loading={loading} />
+      {screen === 'ready' && !conversation && (
+        <div className="h-96 flex items-center justify-center bg-gray-50 rounded-lg">
+          <div className="text-center">
+            {loading ? (
+              <div>
+                <div className="text-lg mb-2">Starting avatar conversation...</div>
+                <div className="animate-spin text-2xl">⏳</div>
+              </div>
+            ) : (
+              <div>
+                <div className="text-lg text-gray-600 mb-2">Avatar Ready</div>
+                <div className="text-sm text-gray-500">Will start automatically when recording begins</div>
+              </div>
+            )}
+          </div>
         </div>
       )}
       {screen === 'call' && conversation && (
@@ -341,6 +361,7 @@ export default function MultiModelPage() {
               onConversationStart={handleAvatarStart}
               onConversationEnd={handleAvatarEnd}
               onTranscriptUpdate={handleTranscriptUpdate}
+              shouldStart={sessionActive}
             />
           </div>
         </div>
