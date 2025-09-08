@@ -29,7 +29,7 @@
             <div class="text-2xl font-bold">
                 <span class="text-gradient">HEUMN</span>
             </div>
-            <a href="/app" class="px-4 py-2 bg-white text-gray-900 rounded-full font-semibold hover:bg-gray-200 transition">Get Started</a>
+            <a href="#contact" class="px-4 py-2 bg-white text-gray-900 rounded-full font-semibold hover:bg-gray-200 transition">Get Started</a>
         </nav>
     </header>
 
@@ -154,10 +154,10 @@
             messageBox.classList.remove('text-red-400');
             messageBox.classList.add('text-green-400');
             
-            // Redirect to app after a brief delay
+            // Show success message for now (app deployment coming soon)
             if (shouldRedirect) {
                 setTimeout(() => {
-                    window.location.href = '/app';
+                    messageBox.textContent = 'Thank you! App deployment coming soon. Check back shortly.';
                 }, 1500);
             }
         }
