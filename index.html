@@ -29,7 +29,7 @@
             <div class="text-2xl font-bold">
                 <span class="text-gradient">HEUMN</span>
             </div>
-            <a href="#contact" class="px-4 py-2 bg-white text-gray-900 rounded-full font-semibold hover:bg-gray-200 transition">Get Started</a>
+            <a href="/app" class="px-4 py-2 bg-white text-gray-900 rounded-full font-semibold hover:bg-gray-200 transition">Get Started</a>
         </nav>
     </header>
 
@@ -53,6 +53,22 @@
                     <button type="submit" class="px-8 py-3 w-full sm:w-auto bg-gradient-to-r from-indigo-500 to-pink-500 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">Try Demo</button>
                 </form>
                 <div id="hero-message-box" class="mt-4 text-green-400"></div>
+                
+                <!-- Video embed -->
+                <div class="mt-8 max-w-4xl mx-auto">
+                    <div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%;
+                     padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
+                     border-radius: 8px; will-change: transform;">
+                      <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
+                        src="https://www.canva.com/design/DAGyQYrffuI/eKolM5YYVJI330Bzsrl-1A/watch?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
+                      </iframe>
+                    </div>
+                    <div class="text-center">
+                        <a href="https://www.canva.com/design/DAGyQYrffuI/eKolM5YYVJI330Bzsrl-1A/watch?utm_content=DAGyQYrffuI&utm_campaign=designshare&utm_medium=embeds&utm_source=link" target="_blank" rel="noopener" class="text-sm text-gray-400 hover:text-gray-300 underline">What if technology could listen, learn, and translate these signals — in real time?</a>
+                        <p class="text-xs text-gray-500 mt-1">by Eric Chong</p>
+                    </div>
+                </div>
+                
                 <!-- Disclaimer for Hero Section -->
                 <div class="mt-4 max-w-lg mx-auto text-xs text-gray-500">
                     <p>This is a hackathon project. The demo is for informational and entertainment purposes only and does not provide medical diagnosis or advice. For inquiries about project development, please contact Eric Chong at <a href="https://www.linkedin.com/in/ericofchong/" target="_blank" class="underline hover:text-gray-300">https://www.linkedin.com/in/ericofchong/</a> or <a href="mailto:eric@mytongueai.com" class="underline hover:text-gray-300">eric@mytongueai.com</a>.</p>
@@ -129,14 +145,21 @@
     </footer>
 
     <script>
-        // Handle form submission with success messages
-        function handleFormSubmit(form) {
+        // Handle form submission with success messages and redirect
+        function handleFormSubmit(form, shouldRedirect = false) {
             const messageBox = form.nextElementSibling;
             
             // Show success message
-            messageBox.textContent = 'Thank you for joining the waitlist! We\'ll be in touch soon.';
+            messageBox.textContent = 'Thank you for joining the waitlist! Redirecting to demo...';
             messageBox.classList.remove('text-red-400');
             messageBox.classList.add('text-green-400');
+            
+            // Redirect to app after a brief delay
+            if (shouldRedirect) {
+                setTimeout(() => {
+                    window.location.href = '/app';
+                }, 1500);
+            }
         }
 
         // Add event listeners when DOM is loaded
@@ -145,12 +168,12 @@
             const waitlistForm = document.getElementById('waitlist-form');
 
             // Handle successful form submissions
-            heroWaitlistForm.addEventListener('submit', function() {
-                setTimeout(() => handleFormSubmit(heroWaitlistForm), 100);
+            heroWaitlistForm.addEventListener('submit', function(e) {
+                setTimeout(() => handleFormSubmit(heroWaitlistForm, true), 100);
             });
 
-            waitlistForm.addEventListener('submit', function() {
-                setTimeout(() => handleFormSubmit(waitlistForm), 100);
+            waitlistForm.addEventListener('submit', function(e) {
+                setTimeout(() => handleFormSubmit(waitlistForm, false), 100);
             });
         });
     </script>

@@ -1,0 +1,25 @@
+{
+  "rewrites": [
+    {
+      "source": "/app/:path*",
+      "destination": "/next-js-streaming-example/:path*"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "/agentserver/:path*"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/next-js-streaming-example/:path*",
+      "destination": "/app/:path*",
+      "permanent": false
+    }
+  ],
+  "functions": {
+    "next-js-streaming-example/pages/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "buildCommand": "cd next-js-streaming-example && npm run build"
+}
