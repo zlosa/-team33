@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEUMN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d0d0d;
+            color: #f0f0f0;
+        }
+        .text-gradient {
+            background: linear-gradient(90deg, #6a82fb 0%, #fc5c7d 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header -->
+    <header class="p-6">
+        <nav class="container mx-auto flex justify-between items-center">
+            <div class="text-2xl font-bold">
+                <span class="text-gradient">HEUMN</span>
+            </div>
+            <a href="/app" class="px-4 py-2 bg-white text-gray-900 rounded-full font-semibold hover:bg-gray-200 transition">Try App</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="relative h-screen flex items-center justify-center p-6 text-center overflow-hidden">
+            <!-- Background element for visual effect -->
+            <div class="absolute inset-0 z-0 opacity-10">
+                <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://placehold.co/1920x1080/0d0d0d/1f1f1f?text=Biomarker+Waves');"></div>
+            </div>
+            <div class="relative z-10 max-w-5xl mx-auto">
+                <h1 class="text-6xl md:text-8xl font-extrabold leading-tight tracking-tighter mb-8">
+                    A mirror turning biosignals into <span class="text-gradient">exclusive understanding</span>.
+                </h1>
+                <p class="text-xl md:text-2xl max-w-3xl mx-auto opacity-90 mb-12 font-light">
+                    From voice and facial expressions, HEUMN transforms talking heads into a hidden score. Apply for private access.
+                </p>
+                <!-- Hero Form -->
+                <form id="hero-waitlist-form" action="https://formspree.io/f/mvgbdvog" method="POST" class="mb-8">
+                    <div class="flex flex-col sm:flex-row gap-4 items-center justify-center max-w-lg mx-auto">
+                        <input id="hero-email-input" name="email" type="email" placeholder="Enter your email to get access" required class="px-8 py-4 w-full rounded-full bg-gray-800 border border-gray-600 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 transition text-lg" />
+                        <button type="submit" class="px-10 py-4 w-full sm:w-auto bg-gradient-to-r from-indigo-500 to-pink-500 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-lg whitespace-nowrap">Try Demo</button>
+                    </div>
+                </form>
+                <div id="hero-message-box" class="mb-6 text-green-400 text-lg"></div>
+                
+                <!-- Disclaimer for Hero Section -->
+                <div class="max-w-2xl mx-auto text-sm text-gray-500 leading-relaxed">
+                    <p>This is a hackathon project. The demo is for informational and entertainment purposes only and does not provide medical diagnosis or advice. For inquiries about project development, please contact Eric Chong at <a href="https://www.linkedin.com/in/ericofchong/" target="_blank" class="underline hover:text-gray-300">https://www.linkedin.com/in/ericofchong/</a> or <a href="mailto:eric@mytongueai.com" class="underline hover:text-gray-300">eric@mytongueai.com</a>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Video Section -->
+        <section class="py-20 px-6 bg-gray-900">
+            <div class="container mx-auto max-w-4xl text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-8">See How It Works</h2>
+                <div class="max-w-4xl mx-auto">
+                    <div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%;
+                     padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-bottom: 1.5em; overflow: hidden;
+                     border-radius: 8px; will-change: transform;">
+                      <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
+                        src="https://www.canva.com/design/DAGyQYrffuI/eKolM5YYVJI330Bzsrl-1A/watch?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
+                      </iframe>
+                    </div>
+                    <div class="text-center">
+                        <a href="https://www.canva.com/design/DAGyQYrffuI/eKolM5YYVJI330Bzsrl-1A/watch?utm_content=DAGyQYrffuI&utm_campaign=designshare&utm_medium=embeds&utm_source=link" target="_blank" rel="noopener" class="text-lg text-gray-300 hover:text-white underline font-medium">What if technology could listen, learn, and translate these signals — in real time?</a>
+                        <p class="text-sm text-gray-400 mt-2">by Eric Chong</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases Section -->
+        <section id="use-cases" class="py-20 px-6">
+            <div class="container mx-auto max-w-6xl">
+                <h2 class="text-4xl font-bold text-center mb-16">Unlocking Understanding in Every Field</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Clinic Card -->
+                    <div class="bg-gray-800 rounded-3xl p-8 shadow-xl border border-gray-700">
+                        <div class="text-gradient text-3xl mb-4">
+                            <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m-5 4H7a2 2 0 01-2-2v-4a2 2 0 012-2h4a2 2 0 012 2v4a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-center mb-2">Clinics</h3>
+                        <p class="text-gray-400 text-center text-sm">Empower clinicians with objective data to better understand patient emotional and cognitive states.</p>
+                    </div>
+
+                    <!-- Families Card -->
+                    <div class="bg-gray-800 rounded-3xl p-8 shadow-xl border border-gray-700">
+                        <div class="text-gradient text-3xl mb-4">
+                            <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 0 0" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m0-15l6 6m-6-6l-6 6"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-center mb-2">Families</h3>
+                        <p class="text-gray-400 text-center text-sm">Foster deeper connections by revealing emotional nuances in family conversations and interactions.</p>
+                    </div>
+                    
+                    <!-- Schools Card -->
+                    <div class="bg-gray-800 rounded-3xl p-8 shadow-xl border border-gray-700">
+                        <div class="text-gradient text-3xl mb-4">
+                            <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-center mb-2">Schools</h3>
+                        <p class="text-gray-400 text-center text-sm">Help educators identify and address student emotional well-being and engagement in real-time.</p>
+                    </div>
+
+                    <!-- Workplaces Card -->
+                    <div class="bg-gray-800 rounded-3xl p-8 shadow-xl border border-gray-700">
+                        <div class="text-gradient text-3xl mb-4">
+                            <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13h-6m-6 0H3m12 0l-3-3m0 6l3-3"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-center mb-2">Workplaces</h3>
+                        <p class="text-gray-400 text-center text-sm">Enhance team dynamics and leadership effectiveness by understanding the true emotional pulse of your organization.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-20 px-6 bg-gray-900">
+            <div class="container mx-auto max-w-2xl text-center">
+                <h2 class="text-4xl font-bold mb-4">Secure Your Exclusive Access</h2>
+                <p class="text-lg opacity-80 mb-8">Join the private waitlist to be one of the first to experience HEUMN.</p>
+                <form id="waitlist-form" action="https://formspree.io/f/mvgbdvog" method="POST" class="flex flex-col sm:flex-row gap-4 items-center justify-center">
+                    <input id="email-input" name="email" type="email" placeholder="Enter your email" required class="px-6 py-3 w-full sm:w-80 rounded-full bg-gray-700 border border-gray-600 focus:outline-none focus:border-indigo-500 transition" />
+                    <button type="submit" class="px-8 py-3 w-full sm:w-auto bg-gradient-to-r from-indigo-500 to-pink-500 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">Join the Waitlist</button>
+                </form>
+                <div id="message-box" class="mt-4 text-green-400"></div>
+                <!-- Disclaimer for Contact Section -->
+                <div class="mt-4 max-w-lg mx-auto text-xs text-gray-500">
+                    <p>This is a hackathon project. The demo is for informational and entertainment purposes only and does not provide medical diagnosis or advice. For inquiries about project development, please contact Eric Chong at <a href="https://www.linkedin.com/in/ericofchong/" target="_blank" class="underline hover:text-gray-300">https://www.linkedin.com/in/ericofchong/</a> or <a href="mailto:eric@mytongueai.com" class="underline hover:text-gray-300">eric@mytongueai.com</a>.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="p-6 text-center text-gray-500">
+        <p>&copy; 2025 HEUMN. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Handle form submission with success messages and redirect
+        async function handleFormSubmit(form, shouldRedirect = false) {
+            const messageBox = form.nextElementSibling;
+            const formData = new FormData(form);
+            
+            try {
+                // Submit to Formspree in background
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    // Show success message
+                    messageBox.textContent = 'Thank you for joining the waitlist! Redirecting to demo...';
+                    messageBox.classList.remove('text-red-400');
+                    messageBox.classList.add('text-green-400');
+                    
+                    // Redirect to app after delay
+                    if (shouldRedirect) {
+                        setTimeout(() => {
+                            messageBox.textContent = 'Thank you! Redirecting to app...';
+                            window.location.href = '/app';
+                        }, 1500);
+                    }
+                } else {
+                    throw new Error('Form submission failed');
+                }
+            } catch (error) {
+                messageBox.textContent = 'Error submitting form. Please try again.';
+                messageBox.classList.remove('text-green-400');
+                messageBox.classList.add('text-red-400');
+            }
+        }
+
+        // Add event listeners when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            const heroWaitlistForm = document.getElementById('hero-waitlist-form');
+            const waitlistForm = document.getElementById('waitlist-form');
+
+            // Handle form submissions with AJAX
+            heroWaitlistForm.addEventListener('submit', function(e) {
+                e.preventDefault(); // Prevent default form submission
+                handleFormSubmit(heroWaitlistForm, true);
+            });
+
+            waitlistForm.addEventListener('submit', function(e) {
+                e.preventDefault(); // Prevent default form submission
+                handleFormSubmit(waitlistForm, false);
+            });
+        });
+    </script>
+</body>
+</html>
