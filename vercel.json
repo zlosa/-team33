@@ -1,25 +1,19 @@
 {
+  "version": 2,
+  "builds": [
+    {
+      "src": "next-js-streaming-example/package.json",
+      "use": "@vercel/next"
+    }
+  ],
   "rewrites": [
     {
-      "source": "/app/:path*",
-      "destination": "/next-js-streaming-example/:path*"
+      "source": "/app/(.*)",
+      "destination": "/next-js-streaming-example/$1"
     },
     {
-      "source": "/api/:path*",
-      "destination": "/agentserver/:path*"
+      "source": "/app",
+      "destination": "/next-js-streaming-example"
     }
-  ],
-  "redirects": [
-    {
-      "source": "/next-js-streaming-example/:path*",
-      "destination": "/app/:path*",
-      "permanent": false
-    }
-  ],
-  "functions": {
-    "next-js-streaming-example/pages/**/*.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "buildCommand": "cd next-js-streaming-example && npm run build"
+  ]
 }
