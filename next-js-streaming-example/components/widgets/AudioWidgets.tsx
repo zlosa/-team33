@@ -42,7 +42,8 @@ export function AudioWidgets({ modelName, recordingLengthMs, streamWindowLengthM
 
   async function connect() {
     const baseUrl = getApiUrlWs(authContext.environment);
-    const socketUrl = `${baseUrl}/v0/stream/models?apikey=${authContext.key}`;
+    const apiKey = authContext.key || process.env.NEXT_PUBLIC_HUME_API_KEY || process.env.HUME_API_KEY;
+    const socketUrl = `${baseUrl}/v0/stream/models?apikey=${apiKey}`;
 
     serverReadyRef.current = true;
 

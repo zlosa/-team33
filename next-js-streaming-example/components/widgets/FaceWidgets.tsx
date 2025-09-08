@@ -62,7 +62,8 @@ export function FaceWidgets({ onCalibrate, onEmotionUpdate }: FaceWidgetsProps) 
     } else {
       const baseUrl = getApiUrlWs(authContext.environment);
       const endpointUrl = `${baseUrl}/v0/stream/models`;
-      const socketUrl = `${endpointUrl}?apikey=${authContext.key}`;
+      const apiKey = authContext.key || process.env.NEXT_PUBLIC_HUME_API_KEY || process.env.HUME_API_KEY;
+      const socketUrl = `${endpointUrl}?apikey=${apiKey}`;
       console.log(`Connecting to websocket... (using ${endpointUrl})`);
       setStatus(`Connecting to server...`);
 

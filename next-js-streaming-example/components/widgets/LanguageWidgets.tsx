@@ -33,7 +33,8 @@ export function LanguageWidgets() {
 
   function connect() {
     const baseUrl = getApiUrlWs(authContext.environment);
-    const socketUrl = `${baseUrl}/v0/stream/models?apikey=${authContext.key}`;
+    const apiKey = authContext.key || process.env.NEXT_PUBLIC_HUME_API_KEY || process.env.HUME_API_KEY;
+    const socketUrl = `${baseUrl}/v0/stream/models?apikey=${apiKey}`;
 
     console.log(`Connecting to websocket... (using ${socketUrl})`);
     setStatus(`Connecting to server...`);

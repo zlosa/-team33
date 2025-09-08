@@ -35,6 +35,15 @@ function Auth({ children }: AuthProps) {
   const [env, setEnv, loadEnv] = useStorage("hume-env");
 
   useEffect(() => {
+    // Check for environment variable first
+    const envApiKey = process.env.NEXT_PUBLIC_HUME_API_KEY || process.env.HUME_API_KEY;
+    
+    if (envApiKey) {
+      console.log("Using API key from environment");
+      setAuth((oldAuth) => ({ ...oldAuth, key: envApiKey }));
+      return;
+    }
+    
     if (key) {
       console.log("Got key from session storage");
       setAuth((oldAuth) => ({ ...oldAuth, key }));
@@ -62,7 +71,10 @@ function Auth({ children }: AuthProps) {
   }
 
   function renderChildren() {
-    if (auth.key) return children;
+    // Always render children if we have an API key from environment or storage
+    const hasApiKey = auth.key || process.env.NEXT_PUBLIC_HUME_API_KEY || process.env.HUME_API_KEY;
+    
+    if (hasApiKey) return children;
     return <Login authenticate={authenticate}></Login>;
   }
 
