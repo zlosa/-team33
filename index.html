@@ -29,7 +29,7 @@
             <div class="text-2xl font-bold">
                 <span class="text-gradient">HEUMN</span>
             </div>
-            <a href="#contact" class="px-4 py-2 bg-white text-gray-900 rounded-full font-semibold hover:bg-gray-200 transition">Get Started</a>
+            <a href="https://app.heumn.com" class="px-4 py-2 bg-white text-gray-900 rounded-full font-semibold hover:bg-gray-200 transition">Try App</a>
         </nav>
     </header>
 
@@ -176,9 +176,8 @@
                     // Redirect to app after delay
                     if (shouldRedirect) {
                         setTimeout(() => {
-                            messageBox.textContent = 'Thank you! App deployment coming soon. Check back shortly.';
-                            // TODO: Replace with actual app URL when deployed
-                            // window.location.href = '/app';
+                            messageBox.textContent = 'Thank you! Redirecting to app...';
+                            window.location.href = 'https://app.heumn.com';
                         }, 1500);
                     }
                 } else {
